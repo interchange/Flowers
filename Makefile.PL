@@ -1,0 +1,25 @@
+use strict;
+use warnings;
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+    NAME                => 'Flowers',
+    AUTHOR              => q{Stefan Hornburg (Racke) <racke@linuxia.de>},
+    VERSION_FROM        => 'lib/Flowers.pm',
+    ABSTRACT_FROM       => 'lib/Flowers.pm',
+    ($ExtUtils::MakeMaker::VERSION >= 6.3002
+      ? ('LICENSE'=> 'perl')
+      : ()),
+    PL_FILES            => {},
+    BUILD_REQUIRES => {
+	'Test::More' => 0,
+    },
+    PREREQ_PM => {
+        'YAML'       => 0,
+        'Dancer'     => 1.3080,
+	'Dancer::Plugin::Nitesi' => 0.0032,
+	'Dancer::Template::TemplateFlute' => 0.0003,
+    },
+    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean               => { FILES => 'Flowers-*' },
+);
