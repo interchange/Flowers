@@ -1,7 +1,10 @@
 package Flowers;
+
 use Dancer ':syntax';
 use Dancer::Plugin::Nitesi;
 
+use Flowers::Routes::Account;
+    
 our $VERSION = '0.0001';
 
 get '/' => sub {
