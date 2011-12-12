@@ -3,17 +3,17 @@
 
 		<h1>Obstoječi uporabniki</h1>
 
-		<form class="frm-default">
+		<form class="frm-default" action="/login" method="POST">
 			<fieldset>
 			<div class="reg-info">Vstop za registrirane uporabnike. Še niste naš uporabnik? Registrirajte se <a href="">tukaj</a>.</div>
 			<ul>
 				<li>
 					<label>Elektronska pošta</label>
-					<input type="text" />
+					<input type="text" name="email"/>
 				</li>
 				<li>
 					<label>Vaše geslo</label>
-					<input type="text" />
+					<input type="password" name="password"/>
 				</li>
 				<li>
 					<input type="submit" value="Prijava" class="btn-submit" />
