@@ -1,3 +1,6 @@
 /environments
+/logs
+/run
+/sessions
 MYMETA.*
 Makefile
