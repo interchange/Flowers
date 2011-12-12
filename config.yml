@@ -20,6 +20,10 @@ charset: "UTF-8"
 
 template: "template_flute"
 
+# session engine
+
+session: "Storable"
+
 # template: "template_toolkit"
 # engines:
 #   template_toolkit:
