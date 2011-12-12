@@ -16,7 +16,7 @@ builder {
     Dancer::Config::load();
     $dancer_env = Dancer::Config::setting('environment');
     
-    enable_if {$env ne 'production'} "Auth::Htpasswd", file => 'run/.htpasswd';
+    enable_if {$dancer_env ne 'production'} "Auth::Htpasswd", file => 'run/.htpasswd';
     
     $app;
 };
