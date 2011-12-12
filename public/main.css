@@ -61,6 +61,7 @@ body {
 
 p {
 	padding-bottom: 15px;
+	line-height: 18px;
 	}
 
 a {
@@ -73,14 +74,31 @@ a {
 		color: green;
 		}
 
+strong {
+	font-weight: bold;
+	}
+
 input, select, textarea {
 	font-size: 11px;
 	padding: 3px;
 	font-family: Arial;
 	border: 0;
+	border-left: 1px solid #d0dce1;
+	border-top: 1px solid #d0dce1;
 	border-bottom: 1px solid #89a1aa;
 	border-right: 1px solid #89a1aa;
 	border-radius: 3px;
+	}
+
+h1 {
+	font-weight: normal;
+	font-size: 30px;
+	margin-bottom: 20px;
+	font-family: Georgia;
+	}
+
+h2 {
+
 	}
 
 h3 {
@@ -90,10 +108,48 @@ h3 {
 	font-family: Georgia;
 	}
 
+.main ul, .main-full, .main-product ul {
+	margin-bottom: 15px;
+	}
+
 ul li {
-	margin: 6px 0;
+	margin: 6px 0 6px 5px;
 	padding-left: 10px;
 	background: url('img/i_bullet.png') no-repeat 0 2px;
+	}
+
+
+.frm-default ul li {
+	margin: 0; padding: 0; background: 0;
+	margin: 10px 0;
+	overflow: hidden;
+	}
+
+.frm-default fieldset {
+	position: relative;
+	padding: 10px 15px;
+	border: 1px dashed #cccccc;
+	border-radius: 6px;
+	margin-bottom: 15px;
+	}
+
+.frm-default legend {
+	font-size: 11px;
+	padding: 5px 10px;
+	border: 0px dashed #cccccc;
+	font-weight: bold;
+	border-radius: 3px;
+	}
+
+.frm-default label {
+	display: block;
+	margin-bottom: 5px;
+	color: #677450;
+	font-size: 11px;
+	}
+
+.frm-default input, .frm-default textarea, .frm-default select {
+	width: 200px;
 	}
 
 
@@ -102,13 +158,37 @@ ul li {
 	width: 80px;
 	}
 
+.fld-date {
+	width: auto !important;
+	}
+
+.fld-small {
+	width: 50px !important;
+	}
+
+
 .btn-submit{
 	width: auto !important;
 	padding: 2px 5px;
 	background: #566d1a;
 	color: #ffffff;
+	border-top: 0px solid #293508;
+	border-left: 0px solid #293508;
 	border-bottom: 1px solid #293508;
 	border-right: 1px solid #293508;
+	}
+
+.btn-big{
+	width: auto !important;
+	padding: 5px 10px;
+	background: #566d1a;
+	color: #ffffff;
+	border-top: 0px solid #293508;
+	border-left: 0px solid #293508;
+	border-bottom: 1px solid #293508;
+	border-right: 1px solid #293508;
+	font-size: 12px;
+	font-weight: bold;
 	}
 
 .clear {
@@ -127,6 +207,12 @@ ul li {
 	}
 
 
+.txt-info {
+	font-size: 11px;
+	color: #666666;
+	}
+
+
 .link-login {
 	background: url('img/i_key.png') no-repeat 0 0;
 	padding: 2px 0;
@@ -138,13 +224,17 @@ ul li {
 	}
 
 
+
+
+
+
 /* ***** LAYOUT ***************************************************************** */
 
 
 .container {
 	width: 960px;
 	margin: 0 auto;
-	overflow: hidden;
+	overflow: visible;
 	padding-bottom: 10px;
 	}
 
@@ -155,16 +245,30 @@ ul li {
 	}
 
 .main {
+	position: relative;
 	margin-left: 20px;
 	width: 560px;
 	float: left;
 	overflow: hidden;
 	}
 
+.main-product {
+	position: relative;
+	width: 760px;
+	float: right;
+	overflow: hidden;
+	}
+
+.main-full {
+	overflow: visible;
+	padding: 0 10px;
+	}
+
 .rightbar {
 	width: 180px;
 	float: right
 	}
+
 
 
 
@@ -266,16 +370,16 @@ ul li {
 
 
 .navigation {
-	overflow: hidden;
+	overflow: visible;
+	position: relative;
 	background: #688b26 url('img/bg_nav.png') repeat-x top;
 	border-bottom: 6px solid #5f8205;
 	padding: 8px 0 2px 0;
 	border-radius: 5px;
-	text-shadow: 1px 1px 1px #34430e;
 	margin-bottom: 30px;
 	}
 
-	.navigation ul li {
+	.nav-main li {
 		margin: 0; padding: 0; background: 0;
 		float: left;
 		margin: 0 0px;
@@ -283,22 +387,76 @@ ul li {
 		border-right: 1px dotted #88a454;
 		}
 
-	.navigation ul li a {
+	.nav-main li a {
 		font-family: 'Georgia';
 		display: block;
 		color: #ffffff;
 		font-weight: bold;
 		padding: 5px 10px;
 		font-size: 13px;
+		text-shadow: 1px 1px 1px #34430e;
 		}
 
-	.navigation ul li a:hover {
+	.nav-main li a:hover {
 		color: #f8ffbc;
 		text-decoration: none;
 		border: 1px dashed #f1f8c3;
 		border-radius: 4px;
 		padding: 4px 9px;
 		}
+
+.dropdown {
+	position: absolute;
+	left: 250px;
+	top: 50px;
+	background: #ffffff;
+	padding: 5px;
+	z-index: 10000;
+	border: 1px dashed #6d7c45;
+	border-radius: 3px;
+	}
+
+.dropdown-bg {
+	position: relative;
+	background: #5f8205 url('img/bg_dropdown.png') repeat;
+	padding: 10px 15px 10px 15px;
+	border: 0px dashed #384d03;
+	border-radius: 3px;
+	}
+
+	.nav-main-dropdown li {
+		margin: 0; padding: 0; background: 0;
+		margin: 3px 0px;
+		padding: 0;
+		}
+
+	.nav-main-dropdown li a {
+		display: block;
+		border: 0px solid white;
+		padding: 5px 50px 5px 5px;
+		font-family: Georgia;
+		color: #ffffff;
+		text-shadow: 1px 1px 1px #34430e;
+		}
+
+	.nav-main-dropdown li a:hover {
+		color: #f8ffbc;
+		text-decoration: none;
+		border: 1px dashed #f1f8c3;
+		border-radius: 4px;
+		padding: 4px 49px 4px 4px;
+		}
+
+
+.dropdown-arrow {
+	position: absolute;
+	left: 30px;
+	top: -11px;
+	width: 30px;
+	height: 11px;
+	background: url('img/i_arrow-dropdown.png') repeat;
+	}
+
 
 
 /* ----- search box ----- */
@@ -326,7 +484,7 @@ ul li {
 .subnav-bg {
 	/*width: 180px;*/
 	background: #d2edf7;
-	margin: 5px -5px 10px 5px;
+	margin: 5px -5px 15px 5px;
 	}
 
 .subnav-border {
@@ -336,7 +494,7 @@ ul li {
 	left: -5px;
 	right: 5px;
 	border: 1px dashed #89a1aa;
-	padding: 5px 15px;
+	padding: 10px 15px 10px 15px;
 	}
 
 
@@ -423,6 +581,7 @@ ul.subnav-l1 li ul.subnav-l2 li a:hover, ul.subnav-l1 li ul.subnav-l2 li.selecte
 	padding: 5px;
 	font-size: 11px;
 	text-align: right;
+	border-bottom: 1px solid #e0e683;
 	}
 
 
@@ -434,6 +593,7 @@ ul.subnav-l1 li ul.subnav-l2 li a:hover, ul.subnav-l1 li ul.subnav-l2 li.selecte
 	}
 
 .pagging ul {
+	margin: 0; padding: 0; background: 0;
 	float: right;
 	}
 
@@ -455,6 +615,145 @@ ul.subnav-l1 li ul.subnav-l2 li a:hover, ul.subnav-l1 li ul.subnav-l2 li.selecte
 		-webkit-border-radius: 3px;
 		-moz-border-radius: 3px;
 		border-radius: 3px;
+		}
+
+
+.crumbs {
+	background-color: #f3f5d8;
+	padding: 5px;
+	font-size: 11px;
+	border-bottom: 1px solid #e0e683;
+	margin-bottom: 20px;
+	color: #888974;
+	}
+
+.product-gallery {
+	width: 360px;
+	float: left;
+	padding: 5px;
+	border: 1px dashed #bfc0a7;
+	}
+
+	.thumbs {
+		margin-top: 10px;
+		overflow: hidden;
+		}
+
+	.thumb {
+		float: left;
+		margin-right: 20px;
+		}
+
+	.thumbs .last {
+		margin-right: 0;
+		}
+
+
+.product-info {
+	width: 370px;
+	float: right;
+	}
+
+.product-options {
+	margin-top: 30px;
+	}
+
+.product-options-price {
+	font-size: 13px;
+	font-weight: bold;
+	color: #868a33;
+	font-family: Georgia;
+	}
+
+.product-options-list li {
+	margin: 0; padding: 0; background: 0;
+	margin: 4px 0;
+	padding: 6px;
+	background: #f3f5d8;
+	border-radius: 5px;
+	}
+
+.product-options-list li:hover {
+	background: #e9ebc2;
+	border: 1px dashed #bfc0a7;
+	padding: 5px;
+	border-radius: 5px;
+	}
+
+.product-description {
+	margin-top: 30px;
+	}
+
+
+/* ----- cart / checkout ----- */
+
+.cart-item {
+	background: #ffffff;
+	padding: 5px;
+	overflow: hidden;
+	font-size: 11px;
+	border: 0px dashed #bfc0a7;
+	border-right: 1px solid #96b3c6;
+	border-bottom: 1px solid #96b3c6;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	border-radius: 3px;
+	}
+
+	.cart-item img {
+		float: left;
+		margin-right: 5px;
+		}
+
+	.cart-item div {
+		font-weight: bold;
+		margin-bottom: 5px;
+		}
+
+	.cart-sum {
+		font-weight: bold;
+		margin-top: 10px;
+		font-size: 13px;
+		}
+
+.alert {
+	line-height: 14px;
+	padding: 15px;
+	background: #e89c9c;
+	border: 1px dashed #c15a6f;
+	border-radius: 5px;
+	font-size: 11px;
+	font-weight: bold;
+	margin-bottom: 15px;
+	}
+
+.form-error {
+	font-size: 11px;
+	font-weight: bold;
+	color: #dd0b0b;
+	}
+
+.cart-payment {
+	display: block;
+	float: left;
+	width: 60px;
+	padding: 10px;
+	border: 1px dashed #dddddd;
+	text-align: center;
+	font-size: 10px;
+	color: #000000;
+	font-weight: bold;
+	margin-right: 10px;
+	}
+
+.cart-payment:hover, .cart-payment-selected {
+	border: 1px dashed #bbbbbb;
+	text-decoration: none;
+	background: #f3f5d8;
+	}
+	
+	.cart-payment img {
+		margin-bottom: 5px;
 		}
 
 
@@ -512,14 +811,26 @@ ul.subnav-l1 li ul.subnav-l2 li a:hover, ul.subnav-l1 li ul.subnav-l2 li.selecte
 		}
 
 
+
+.reg-info {
+	line-height: 14px;
+	position: absolute;
+	top: 25px;
+	left: 260px;
+	width: 320px;
+	padding: 15px;
+	background: #f3f5d8 url('img/i_info.png') no-repeat 10px 8px;
+	padding-left: 45px;
+	border: 1px dashed #dddddd;
+	border-radius: 5px;
+	font-size: 11px;
+	font-weight: bold;
+	}
+
+
 /* ----- footer ----- */
 
 .footer {
-	padding: 10px;
-	background: #e2e3cb;
-	border: 1px dashed #dddddd;
-	color: #aaaaaa;
-	border-radius: 4px;
 	}
 
 .footer-bg {
