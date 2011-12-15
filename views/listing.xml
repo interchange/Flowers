@@ -1,0 +1,7 @@
+<specification>
+<list name="products" class="product-box" iterator="products">
+<param name="title" class="product-name"/>
+<param name="price" class="product-price"/>
+<param name="sku" class="product-link" target="href" op="append"/>
+</list>
+</specification>

@@ -7,6 +7,7 @@ use Flowers::Products qw/product/;
 
 use Flowers::Routes::Account;
 use Flowers::Routes::Cart;
+use Flowers::Routes::Search;
 
 our $VERSION = '0.0001';
 
