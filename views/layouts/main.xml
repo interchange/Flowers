@@ -1,3 +1,4 @@
 <specification>
 <value name="content" id="content" op="hook"/>
+<value name="total" class="cart-total" filter="currency"/>
 </specification>
