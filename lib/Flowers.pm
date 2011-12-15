@@ -3,24 +3,49 @@ package Flowers;
 use Dancer ':syntax';
 use Dancer::Plugin::Nitesi;
 
+use Flowers::Products qw/product/;
+
 use Flowers::Routes::Account;
-    
+use Flowers::Routes::Cart;
+
 our $VERSION = '0.0001';
+
+hook 'before_template' => sub {
+    my $tokens = shift;
+
+    $tokens->{total} = cart->total;
+};
 
 get '/' => sub {
     template 'index';
 };
 
 get qr{/?(?<path>.*)} => sub {
-    my $path;
+    my ($path, $ret, $rel, $prefix);
 
     $path = captures->{path};
 
     if (navigation($path)) {
 	debug ("path $path is valid.");
     }
+    elsif ($ret = product($path)) {
+	debug ("path $path is a product.");
+	
+	# get related products
+	if ($ret->{sku} =~ /^(.*?)(-[^-]*?)$/) {
+	    debug ("search for related products: $1 from $ret->{sku}.");
+	    $prefix = $1;
+	    $rel = query->select(table => 'products',
+				 fields => [qw/sku title price/],
+				 where => {sku => {'-like' => "$prefix%"}});
+
+	    $ret->{options} = $rel;
+	}
+	
+	return template 'product', $ret;
+    }
     else {
-	debug("Catch all: ", captures->{page});
+	debug("Catch all: ", captures->{path});
     }
     
     template 'index';
@@ -67,9 +92,9 @@ sub navigation {
 	    return $set->[0];
 	}
     }
-};
+}
 
-true;
+true; 
 
 =head1 NAME
 
