@@ -29,6 +29,8 @@ engines:
       currency:
         options:
           int_curr_symbol: "EUR"
+      image:
+        class: "Flowers::Filters::Image"
 
 # session engine
 
