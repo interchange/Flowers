@@ -5,7 +5,7 @@ use warnings;
 use base 'Exporter';
 use vars '@EXPORT_OK';
 
-@EXPORT_OK = qw(product);
+@EXPORT_OK = qw(product product_list);
 
 use Dancer::Plugin::Nitesi;
 
@@ -19,6 +19,19 @@ sub product {
     if (@$set) {
 	return $set->[0];
     }
+}
+
+=head2 product_list
+
+Returns a list of all products, ordered by name.
+    
+=cut
+    
+sub product_list {
+    my ($set);
+    
+    $set = query->select(table => 'products', where => {});
+    return $set;
 }
 
 1;
