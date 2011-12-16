@@ -3,7 +3,7 @@ package Flowers;
 use Dancer ':syntax';
 use Dancer::Plugin::Nitesi;
 
-use Flowers::Products qw/product/;
+use Flowers::Products qw/product product_list/;
 
 use Flowers::Routes::Account;
 use Flowers::Routes::Cart;
@@ -18,7 +18,8 @@ hook 'before_template' => sub {
 };
 
 get '/' => sub {
-    template 'index';
+    # show all products
+    template 'index', {products => product_list()};
 };
 
 get qr{/?(?<path>.*)} => sub {
@@ -37,8 +38,10 @@ get qr{/?(?<path>.*)} => sub {
 	    debug ("search for related products: $1 from $ret->{sku}.");
 	    $prefix = $1;
 	    $rel = query->select(table => 'products',
-				 fields => [qw/sku title price/],
-				 where => {sku => {'-like' => "$prefix%"}});
+				 fields => [qw/sku name price/],
+				 where => {sku => {'-like' => "$prefix%"}},
+				 order => 'price asc',
+		);
 
 	    $ret->{options} = $rel;
 	}

@@ -1,8 +1,9 @@
 <specification>
 <value name="sku"/>
-<value name="title"/>
-<value name="ldescription" class="product-teaser"/>
+<value name="name"/>
+<value name="description" class="product-teaser"/>
 <list name="options" class="product-options-item" iterator="options">
+<param name="name" class="product-options-name"/>
 <param name="price" class="product-options-price"/>
 <param name="sku" class="product-options-sku"/>
 </list>
