@@ -1,7 +1,7 @@
 <specification>
 <list name="products" class="product-box" iterator="products">
 <param name="name" class="product-name"/>
-<param name="price" class="product-price"/>
+<param name="price" class="product-price" filter="currency"/>
 <param name="sku" class="product-link" target="href" op="append"/>
 <param name="sku" class="product-image" target="src" filter="image"/>
 </list>
