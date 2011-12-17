@@ -16,11 +16,10 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'YAML'       => 0,
-	'Template::Flute' => 0.0023,
         'Dancer'     => 1.3080,
 	'Dancer::Session::Storable' => 0,
 	'Dancer::Plugin::Nitesi' => 0.0032,
-	'Dancer::Template::TemplateFlute' => 0.0003,
+	'Dancer::Template::TemplateFlute' => 0.0023,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Flowers-*' },
