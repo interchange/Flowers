@@ -16,6 +16,7 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'YAML'       => 0,
+	'Template::Flute' => 0.0023,
         'Dancer'     => 1.3080,
 	'Dancer::Session::Storable' => 0,
 	'Dancer::Plugin::Nitesi' => 0.0032,
