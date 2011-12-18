@@ -20,6 +20,7 @@ WriteMakefile(
 	'Dancer::Session::Storable' => 0,
 	'Dancer::Plugin::Nitesi' => 0.0032,
 	'Dancer::Template::TemplateFlute' => 0.0023,
+	'Number::Format' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Flowers-*' },
