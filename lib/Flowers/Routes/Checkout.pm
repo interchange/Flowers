@@ -79,7 +79,15 @@ post '/checkout' => sub {
 	}
 	else {
 	    # charge amount
-	    if (charge(amount => cart->total)) {
+	    my $tx;
+	    
+	    $tx = charge(amount => cart->total);
+
+	    if ($tx->is_success()) {
+		debug("Payment redirect: ", $tx->popup_url());
+		
+		return redirect $tx->popup_url();
+		    
 		template 'checkout-thanks';
 	    }
 	    else {
@@ -95,22 +103,27 @@ sub charge {
 
     $settings = config->{payment};
     
-    $tx = Business::OnlinePayment->new('ACI', context => $settings->{context});
-
+    $tx = Business::OnlinePayment->new('ACI', context => $settings->{context},
+				       response_url => $settings->{response_url},
+				       error_url => $settings->{error_url},
+	);
+				       
+    $tx->server($settings->{server});
+    
     $tx->content(amount => $args{amount},
-	login => $settings->{login},
-	password => $settings->{password}
+		 login => $settings->{login},
+		 password => $settings->{password}
 	);
 
     $tx->submit();
 
-    if ($tx->is_success) {
-        debug("Card processed successfully: " . $tx->authorization);
+    if ($tx->is_success()) {
+	debug("Success!  Redirect browser to ". $tx->popup_url());
     } else {
         debug("Card was rejected: " . $tx->error_message);
     }
 
-    return $tx->is_success;
+    return $tx;
 }
 
 true;
