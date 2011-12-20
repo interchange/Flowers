@@ -1,4 +1,6 @@
 <specification>
 <value name="content" id="content" op="hook"/>
 <value name="total" class="cart-total" filter="currency"/>
+<container name="leftbar" value="!layout_noleft"/>
+<container name="rightbar" value="!layout_noright"/>
 </specification>
