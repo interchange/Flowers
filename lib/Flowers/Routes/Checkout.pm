@@ -11,7 +11,8 @@ get '/checkout' => sub {
     my $form;
 
     $form = form('giftinfo');
-	
+    $form->valid(0);
+    
     template 'checkout-giftinfo', {form => $form};
 };
 
@@ -20,16 +21,14 @@ post '/checkout' => sub {
 
     $form_last = 'giftinfo';
     
-    for my $name (qw/payment giftinfo/) {
+    for my $name (qw/giftinfo payment/) {
 	$form = form($name);
 
-	if (@{$form->fields}) {
+	unless ($form->valid) {
 	    $form_last = $name;
 	    last;
 	}
     }
-
-    debug("Form last: $form_last.");
     
     if ($form_last eq 'giftinfo') {
 	$values = $form->values;
@@ -45,12 +44,15 @@ post '/checkout' => sub {
 	if ($validator->has_errors) {
 	    $error_ref = $validator->errors;
 	    debug("Errors: ", $error_ref);
-	
+	    $form->errors($error_ref);
+	    
 	    # back to first step
 	    $form->fill($values);
 	    template 'checkout-giftinfo', {form => $form, errors => $error_ref};
 	}
 	else {
+	    $form->valid(1);
+
 	    $form = form('payment');
 	    template 'checkout-payment', {form => $form};
 	}
