@@ -2,5 +2,6 @@
 <value name="content" id="content" op="hook"/>
 <value name="total" class="cart-total" filter="currency"/>
 <container name="leftbar" value="!layout_noleft"/>
-<container name="rightbar" value="!layout_noright"/>
+<container name="rightbar" value="!layout_noright&amp;!layout_cartright"/>
+<container name="rightbar-cart" value="layout_cartright"/>
 </specification>
