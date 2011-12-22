@@ -23,22 +23,20 @@ get '/search' => sub {
 	}
     }
 
-    $criteria = {title => {'-like'  => "%$q%"},
-		 ldescription => {'-like'  => "%$q%"},
+    $criteria = {name => {'-like'  => "%$q%"},
+		 description => {'-like'  => "%$q%"},
 		 sku => {'-like'  => "%$q%"},
     };
 
     # search products
     $products = query->select(table => 'products',
-			      fields => [qw/sku title price ldescription/],
+			      fields => [qw/sku name price description/],
 			      where => [-and => [-not_bool => 'inactive',
 						 [-or => $criteria
 					]]],
-			      order => 'title',
+			      order => 'name',
 			      limit => 200,
 	);
-
-    debug("Products found for $q: ", scalar(@$products));
 
     template 'listing', {categories => $categories,
 			 collections => $collections,
