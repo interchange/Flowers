@@ -13,7 +13,7 @@ get '/checkout' => sub {
     $form = form('giftinfo');
     $form->valid(0);
     
-    template 'checkout-giftinfo', {form => $form};
+    template 'checkout-giftinfo', {form => $form, layout_noleft => 1};
 };
 
 post '/checkout' => sub {
@@ -48,13 +48,13 @@ post '/checkout' => sub {
 	    
 	    # back to first step
 	    $form->fill($values);
-	    template 'checkout-giftinfo', {form => $form, errors => $error_ref};
+	    template 'checkout-giftinfo', {form => $form, layout_noleft => 1, errors => $error_ref};
 	}
 	else {
 	    $form->valid(1);
 
 	    $form = form('payment');
-	    template 'checkout-payment', {form => $form};
+	    template 'checkout-payment', {form => $form, layout_noleft => 1};
 	}
     }
     elsif ($form_last eq 'payment') {
@@ -77,7 +77,7 @@ post '/checkout' => sub {
 
 	    # back to second step
 	    $form->fill($values);
-	    template 'checkout-payment', {form => $form, errors => $error_ref};
+	    template 'checkout-payment', {form => $form, layout_noleft => 1, errors => $error_ref};
 	}
 	else {
 	    # charge amount
@@ -93,7 +93,7 @@ post '/checkout' => sub {
 		template 'checkout-thanks';
 	    }
 	    else {
-		template 'checkout-payment', {form => $form, errors => $error_ref};
+		template 'checkout-payment', {form => $form, layout_noleft => 1, errors => $error_ref};
 	    }
 	}
     }
