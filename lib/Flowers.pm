@@ -46,6 +46,9 @@ get qr{/?(?<path>.*)} => sub {
 
 	    $ret->{options} = $rel;
 	}
+
+	# no right sidebar
+	$ret->{layout_noright} = 1;
 	
 	return template 'product', $ret;
     }
