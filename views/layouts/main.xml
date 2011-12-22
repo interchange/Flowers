@@ -7,6 +7,7 @@
 <list name="cart" class="cart-item" iterator="items">
 <param name="name" class="cart-item-name"/>
 <param name="price" class="cart-item-price" filter="currency"/>
+<param name="sku" class="cart-item-image" target="src" filter="image"/>
 </list>
 <value name="cart-sum" field="total" filter="currency"/>
 </container>
