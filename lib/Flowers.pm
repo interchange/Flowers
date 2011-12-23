@@ -3,6 +3,7 @@ package Flowers;
 use Dancer ':syntax';
 use Dancer::Plugin::Nitesi;
 
+use Flowers::Navigation;
 use Flowers::Products qw/product product_list/;
 
 use Flowers::Routes::Account;
@@ -16,6 +17,9 @@ hook 'before_template' => sub {
     my $tokens = shift;
 
     $tokens->{total} = cart->total;
+    $tokens->{main_menu} = query->select(table => 'navigation',
+					 type => 'category',
+					 where => {});					 
 };
 
 get '/' => sub {
@@ -24,16 +28,14 @@ get '/' => sub {
 };
 
 get qr{/?(?<path>.*)} => sub {
-    my ($path, $ret, $rel, $prefix);
+    my ($path, $nav, $ret, $rel, $prefix, $products);
 
     $path = captures->{path};
 
-    if (navigation($path)) {
-	debug ("path $path is valid.");
+    if ($nav = navigation($path)) {
+	$products = $nav->products;
     }
     elsif ($ret = product($path)) {
-	debug ("path $path is a product.");
-	
 	# get related products
 	if ($ret->{sku} =~ /^(.*?)(-[^-]*?)$/) {
 	    debug ("search for related products: $1 from $ret->{sku}.");
@@ -56,50 +58,24 @@ get qr{/?(?<path>.*)} => sub {
 	debug("Catch all: ", captures->{path});
     }
     
-    template 'index';
+    template 'index', {products => $products};
 };
 
 sub menu {
     # pulls out menu data from navigation table
 };
 
-sub _build_query_path {
-    my ($path) = @_;
-    my ($nav_config, %nav_parms);
-
-    # defaults
-    %nav_parms = (table => 'navigation',
-		  uri_field => 'uri',
-		  link_table => 'navigation_products',
-		  link_field => 'navigation',
-		  items_table => 'products',
-		  items_link_field => 'sku',
-	);
-
-    # overrides from config
-    $nav_config = config->{navigation}->{main};
-
-    for (keys %$nav_config) {
-	$nav_parms{$_} = $nav_config->{$_};
-    }
-
-    return (table => $nav_parms{table},
-	    where => {$nav_parms{uri_field} => $path});
-}
-
 sub navigation {
-    my ($path, $set);
+    my $path = shift;
+    my $nav;
     
-    if (@_ == 1) {
-	# just check whether path is available in navigation table
-	$path = shift;
+    $nav = Flowers::Navigation->new(uri => $path);
 
-	$set = query->select(_build_query_path($path));
-
-	if (@$set == 1) {
-	    return $set->[0];
-	}
+    if ($nav->code && ! $nav->inactive) {
+	return $nav;
     }
+
+    return;
 }
 
 true; 
