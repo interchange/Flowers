@@ -5,4 +5,8 @@
 <param name="sku" class="product-link" target="href" op="append"/>
 <param name="sku" class="product-image" target="src" filter="image"/>
 </list>
+<!-- sort form -->
+<form name="sort" link="name">
+<param name="sort"/>
+</form>
 </specification>

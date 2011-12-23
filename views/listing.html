@@ -1,10 +1,13 @@
 	<div class="main">
-
+	  
 		<div class="filters">
+		  <form name="sort">
 			Razvrsti po: 
-			<select>
-				<option>Priljubljenosti</option>
+			<select name="sort" onChange="this.form.submit()">
+				<option value="priority">Priljubljenosti</option>
+				<option value="price">Cena</option>
 			</select>
+		  </form>
 		</div>
 		
 		<div class="product-box">

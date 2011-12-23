@@ -23,14 +23,24 @@ sub product {
 
 =head2 product_list
 
-Returns a list of all products, ordered by name.
+Returns a list of all products, ordered by priority.
     
 =cut
     
 sub product_list {
-    my ($set);
+    my (%args) = @_;
+    my ($order, $set);
+
+    $args{sort} ||= 'priority';
+	
+    if ($args{sort} eq 'price') {
+	$order = 'price ASC, priority ASC';
+    }
+    else {
+	$order = 'priority ASC';
+    }
     
-    $set = query->select(table => 'products', where => {});
+    $set = query->select(table => 'products', where => {}, order => $order);
     return $set;
 }
 

@@ -39,9 +39,9 @@ Returns list of products for this navigation entry.
 =cut
     
 sub products {
-    my ($self) = @_;
+    my ($self, %args) = @_;
 
-    return query->select($self->_build_query_products);
+    return query->select($self->_build_query_products(%args));
 }
 
 sub _build_query_init {
@@ -72,19 +72,28 @@ sub _build_query_path {
 }
 
 sub _build_query_products {
-    my ($self) = @_;
-    my ($products, $navigation_products, $navigation_link, $sku);
+    my ($self, %args) = @_;
+    my ($products, $navigation_products, $navigation_link, $sku, $sort, $order);
 
+    $args{sort} ||= 'priority';
+    
     $products = $self->{query_parameters}->{items_table};
     $navigation_products = $self->{query_parameters}->{link_table};
     $navigation_link = $self->{query_parameters}->{link_field};
     $sku = $self->{query_parameters}->{items_link_field};
+
+    if ($args{sort} eq 'price') {
+	$order = "$products.price ASC, $products.priority ASC";
+    }
+    else {
+	$order = "$products.priority ASC";
+    }
     
     return (join => "$products $products.sku=$navigation_products.sku $navigation_products",
 	    fields => ["$products.sku", "$products.name", "$products.description", "$products.price"],
 	    where => {-not_bool => "$products.inactive",
 		      "$navigation_products.$navigation_link" => $self->{code}},
-	    order => "$products.priority");
+	    order => $order);
 }
 
 1;

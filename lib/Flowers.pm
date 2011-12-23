@@ -1,6 +1,7 @@
 package Flowers;
 
 use Dancer ':syntax';
+use Dancer::Plugin::Form;
 use Dancer::Plugin::Nitesi;
 
 use Flowers::Navigation;
@@ -22,23 +23,26 @@ hook 'before_template' => sub {
 					 where => {});					 
 };
 
-get '/' => sub {
-    # show all products
-    template 'listing', {products => product_list()};
-};
-
 get qr{/?(?<path>.*)} => sub {
-    my ($path, $nav, $ret, $rel, $prefix, $products);
+    my ($path, $nav, $ret, $rel, $prefix, $form, $products, $sort);
 
     $path = captures->{path};
 
-    if ($nav = navigation($path)) {
-	$products = $nav->products;
+    if (length($path) == 0) {
+	$form = form('sort');
+	$sort = param('sort');
+	$form->fill(sort => $sort);
+	
+	$products = product_list(sort  => $sort);
+    } elsif ($nav = navigation($path)) {
+	$form = form('sort');
+	$sort = param('sort');
+
+	$products = $nav->products(sort => $sort);
     }
     elsif ($ret = product($path)) {
 	# get related products
 	if ($ret->{sku} =~ /^(.*?)(-[^-]*?)$/) {
-	    debug ("search for related products: $1 from $ret->{sku}.");
 	    $prefix = $1;
 	    $rel = query->select(table => 'products',
 				 fields => [qw/sku name price/],
@@ -55,10 +59,10 @@ get qr{/?(?<path>.*)} => sub {
 	return template 'product', $ret;
     }
     else {
-	debug("Catch all: ", captures->{path});
+	$products = [];
     }
-    
-    template 'listing', {products => $products};
+
+    template 'listing', {products => $products, sort => $sort, form => $form};
 };
 
 sub menu {
