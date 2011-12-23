@@ -24,7 +24,7 @@ hook 'before_template' => sub {
 
 get '/' => sub {
     # show all products
-    template 'index', {products => product_list()};
+    template 'listing', {products => product_list()};
 };
 
 get qr{/?(?<path>.*)} => sub {
@@ -58,7 +58,7 @@ get qr{/?(?<path>.*)} => sub {
 	debug("Catch all: ", captures->{path});
     }
     
-    template 'index', {products => $products};
+    template 'listing', {products => $products};
 };
 
 sub menu {
