@@ -7,6 +7,6 @@
 </list>
 <!-- sort form -->
 <form name="sort" link="name">
-<param name="sort"/>
+<field name="sort"/>
 </form>
 </specification>
