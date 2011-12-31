@@ -40,6 +40,10 @@ engines:
 
 session: "Storable"
 
+# default payment method
+
+payment_method: ACI
+
 # template: "template_toolkit"
 # engines:
 #   template_toolkit:
