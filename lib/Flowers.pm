@@ -17,6 +17,7 @@ our $VERSION = '0.0001';
 hook 'before_template' => sub {
     my $tokens = shift;
 
+    $tokens->{form} ||= form;
     $tokens->{total} = cart->total;
     $tokens->{main_menu} = query->select(table => 'navigation',
 					 type => 'category',
