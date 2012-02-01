@@ -40,6 +40,10 @@ engines:
 
 session: "Storable"
 
+# site locale
+
+locale: sl_SI
+
 # default payment method
 
 payment_method: ACI
