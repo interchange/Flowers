@@ -10,6 +10,9 @@ use DateTime::Locale;
 use Input::Validator;
 use Business::OnlinePayment;
 
+use Flowers::Address;
+use Flowers::Transactions;
+
 get '/checkout' => sub {
     my $form;
 
@@ -41,11 +44,20 @@ post '/checkout' => sub {
 
 	$validator->field('first_name')->required(1);
 	$validator->field('last_name')->required(1);
-
+	$validator->field('street_address')->required(1);
+	$validator->field('zip')->required(1);
+	$validator->field('city')->required(1);
+	
 	$validator->validate($values);
 
 	if ($validator->has_errors) {
 	    $error_ref = $validator->errors;
+	    if ($error_ref->{zip}) {
+		$error_ref->{zip_city} = $error_ref->{zip};
+	    } elsif ($error_ref->{city}) {
+		$error_ref->{zip_city} = $error_ref->{city};
+	    }
+		
 	    debug("Errors: ", $error_ref);
 	    $form->errors($error_ref);
 	    
@@ -76,30 +88,62 @@ post '/checkout' => sub {
 
 	if ($validator->has_errors) {
 	    $error_ref = $validator->errors;
+	    $error_ref->{zip_city} = $error_ref->{zip} || $error_ref->{city};
+
+	    if (exists $error_ref->{zip}) {
+		$error_ref->{zip_city} = $error_ref->{zip};
+	    }
+	    
 	    debug("Errors: ", $error_ref);
 
+	
+	
 	    # back to second step
 	    $form->fill($values);
 	    template 'checkout-payment', checkout_tokens($form, $error_ref);
 	}
 	else {
 	    # charge amount
-	    my $tx;
+	    my ($expiration, $tx);
+
+	    $expiration = sprintf("%02d%02d", $values->{cc_month}, substr($values->{cc_year}, 2, 2));
 	    
-	    $tx = charge(amount => cart->total);
+	    $tx = charge(amount => cart->total,
+		card_number => $values->{cc_number},
+		expiration => $expiration,
+		cvc => $values->{cvc_number});
 
 	    if ($tx->is_success()) {
-		debug("Payment redirect: ", $tx->popup_url());
+		if ($tx->can('popup_url')) {
+		    debug("Payment redirect: ", $tx->popup_url());
 		
-		return redirect $tx->popup_url();
-		    
-		template 'checkout-thanks';
+		    return redirect $tx->popup_url();
+		}
+
+		debug "Payment successful: ", $tx->authorization;
+
+		my ($addr_form, $addr_values, $addr_ship, $addr_bill, $tx_order);
+		
+		# create delivery address from gift info form
+		debug("Looking at giftinfo form.");
+		$addr_form = form('giftinfo');
+		$addr_values = $addr_form->values('session');
+		debug("Delivery address values: ", $addr_values);
+
+		$addr_ship = Flowers::Address->new(%$addr_values);
+		$addr_ship->save;
+
+		# create billing address from payment form
+		
+		# create transaction
+		$tx_order = Flowers::Transactions->new();
+		$tx_order->submit;
+		
+		template 'checkout-thanks', checkout_tokens($form);
 	    }
 	    else {
-		template 'checkout-payment', {form => $form,
-					      layout_noleft => 1,
-					      layout_cartright => 1,
-					      errors => $error_ref};
+		$error_ref->{payment_error} = $tx->error_message;
+		template 'checkout-payment', checkout_tokens($form, $error_ref);
 	    }
 	}
     }
@@ -109,24 +153,34 @@ sub charge {
     my (%args) = @_;
     my ($tx, $settings);
 
-    $settings = config->{payment};
+    $settings = config->{plugins}->{Nitesi}->{Payment}->{providers}->{config->{payment_method}};
     
-    $tx = Business::OnlinePayment->new('ACI', context => $settings->{context},
-				       response_url => $settings->{response_url},
-				       error_url => $settings->{error_url},
-	);
-				       
-    $tx->server($settings->{server});
+    $tx = Business::OnlinePayment->new(config->{payment_method}, %$settings);
+
+    if ($settings->{server}) {
+	$tx->server($settings->{server});
+    }
     
     $tx->content(amount => $args{amount},
+		 card_number => $args{card_number},
+		 expiration => $args{expiration},
+		 cvc => $args{cvc},
 		 login => $settings->{login},
 		 password => $settings->{password}
 	);
 
-    $tx->submit();
+    eval {
+	$tx->submit();
+    };
 
+    if ($@) {
+	die "Payment ", config->{payment_method}, " failed: ", $@;
+    }
+    
     if ($tx->is_success()) {
-	debug("Success!  Redirect browser to ". $tx->popup_url());
+	if ($tx->can('popup_url')) {
+	    debug("Success!  Redirect browser to ". $tx->popup_url());
+	}
     } else {
         debug("Card was rejected: " . $tx->error_message);
     }
@@ -156,6 +210,7 @@ sub checkout_tokens {
     for my $name (@{$dtl->month_stand_alone_abbreviated}) {
 	push (@months, {value => $i++, label => ucfirst($name)});
     }
+    debug("Months: ", \@months);
 
     for my $year (2012 .. 2020) {
 	push (@years, {value => substr($year,2,2), label => $year});
@@ -163,6 +218,7 @@ sub checkout_tokens {
     
     $tokens = {form => $form,
 	       errors => $errors,
+	       payment_error => delete $errors->{payment_error},
 	       layout_noleft => 1,
 	       layout_cartright => 1,
 	       items => cart->items,
