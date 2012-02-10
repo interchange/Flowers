@@ -2,21 +2,21 @@
 
 		<h1>Registracija</h1>
 
-		<form class="frm-default">
+		<form class="frm-default" name="registration" action="/registration" method="POST">
 			<fieldset>
 			<div class="reg-info">Podatke za registracijo boste prejeli po elektronski pošti.</div>
 			<ul>
 				<li>
 					<label>Elektronska pošta</label>
-					<input type="text" />
+					<input type="text" name="email"/>
 				</li>
 				<li>
 					<label>Željeno geslo</label>
-					<input type="text" />
+					<input type="password" name="password"/>
 				</li>
 				<li>
 					<label>Ponovi geslo</label>
-					<input type="text" />
+					<input type="password" name="verify" />
 				</li>
 				<li>
 					<input type="submit" value="Registriraj me" class="btn-submit" />
