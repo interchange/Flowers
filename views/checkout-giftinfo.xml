@@ -2,6 +2,7 @@
 <container name="errors" value="errors" class="alert"/>
 <value name="first_name" scope="errors" id="error-first-name" op="toggle" args="static"/>
 <value name="last_name" scope="errors" id="error-last-name" op="toggle" args="static"/>
+<value name="zip_city" scope="errors" id="error-zip-city" op="toggle" args="static"/>
 <form name="giftinfo" link="name">
 <field name="gender"/>
 <field name="first_name"/>
