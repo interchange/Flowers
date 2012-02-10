@@ -4,6 +4,9 @@ use Dancer ':syntax';
 use Dancer::Plugin::Nitesi;
 use Dancer::Plugin::Form;
 
+use DateTime;
+use DateTime::Duration;
+use DateTime::Locale;
 use Input::Validator;
 use Business::OnlinePayment;
 
@@ -133,13 +136,39 @@ sub charge {
 
 sub checkout_tokens {
     my ($form, $errors) = @_;
-    my ($tokens);
+    my ($tokens, $dtl, $cur_date, $duration, $i, @months, @years, $day, @gift_days);
 
+    $dtl = DateTime::Locale->load(config->{locale});
+    $cur_date = DateTime->now(locale => $dtl);
+    $duration = DateTime::Duration->new(days => 1);
+    
+    # gift info
+    for (my $i = 0; $i < 60; $i++) {
+	$day = $cur_date->day;
+	
+	push (@gift_days, {value => $day, label => ucfirst($cur_date->day_abbr) . ", $day"});
+
+	$cur_date->add_duration($duration);
+    }
+    
+    # month/years for CC checkout
+    $i = 1;
+    for my $name (@{$dtl->month_stand_alone_abbreviated}) {
+	push (@months, {value => $i++, label => ucfirst($name)});
+    }
+
+    for my $year (2012 .. 2020) {
+	push (@years, {value => substr($year,2,2), label => $year});
+    }
+    
     $tokens = {form => $form,
 	       errors => $errors,
 	       layout_noleft => 1,
 	       layout_cartright => 1,
 	       items => cart->items,
+	       days => \@gift_days,
+	       months => \@months,
+	       years => \@years,
     };
 
     return $tokens;
