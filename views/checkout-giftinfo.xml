@@ -11,7 +11,7 @@
 <field name="zip"/>
 <field name="city"/>
 <field name="message"/>
-<field name="day"/>
+<field name="day" iterator="days"/>
 <field name="month"/>
 <field name="time"/>
 </form>
