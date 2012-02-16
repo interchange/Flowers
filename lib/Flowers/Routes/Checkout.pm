@@ -166,7 +166,9 @@ sub charge {
 		 expiration => $args{expiration},
 		 cvc => $args{cvc},
 		 login => $settings->{login},
-		 password => $settings->{password}
+		 password => $settings->{password},
+		 type => $args{type} || $settings->{type} || 'CC',
+		 action => $args{action} || $settings->{action} || 'Authorization Only',
 	);
 
     eval {
