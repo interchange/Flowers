@@ -161,7 +161,11 @@ sub charge {
 	$tx->server($settings->{server});
     }
     
-    $tx->content(amount => $args{amount},
+    # Sofortbanking expects amount as xx.xx
+    $args{amount} = sprintf('%.2f', $args{amount});
+
+    $tx->content(%$settings,
+		 amount => $args{amount},
 		 card_number => $args{card_number},
 		 expiration => $args{expiration},
 		 cvc => $args{cvc},
