@@ -106,7 +106,7 @@ post '/checkout' => sub {
 	    # charge amount
 	    my ($expiration, $tx);
 
-	    $expiration = sprintf("%02d%02d", $values->{cc_month}, substr($values->{cc_year}, 2, 2));
+	    $expiration = sprintf("%02d%02d", $values->{cc_month}, $values->{cc_year});
 	    
 	    $tx = charge(amount => cart->total,
 		card_number => $values->{cc_number},
