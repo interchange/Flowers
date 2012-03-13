@@ -223,8 +223,6 @@ sub checkout_tokens {
     }
     
     $tokens = {form => $form,
-	       errors => $errors,
-	       payment_error => delete $errors->{payment_error},
 	       layout_noleft => 1,
 	       layout_cartright => 1,
 	       items => cart->items,
@@ -232,6 +230,11 @@ sub checkout_tokens {
 	       months => \@months,
 	       years => \@years,
     };
+
+    if ($errors) {
+        $tokens->{errors} = $errors;
+        $tokens->{payment_error} = delete $errors->{payment_error};
+    }
 
     return $tokens;
 }
