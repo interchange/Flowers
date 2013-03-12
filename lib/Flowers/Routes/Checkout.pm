@@ -195,8 +195,10 @@ sub charge {
 }
 
 sub checkout_tokens {
-    my ($form, $errors) = @_;
-    my ($tokens, $dtl, $cur_date, $duration, $i, @months, @years, $day, @gift_days);
+    my ($form, $errors, $tokens) = @_;
+    my ($dtl, $cur_date, $duration, $i, @months, @years, $day, @gift_days);
+
+    $tokens ||= {};
 
     $dtl = DateTime::Locale->load(config->{locale});
     $cur_date = DateTime->now(locale => $dtl);
@@ -222,14 +224,14 @@ sub checkout_tokens {
 	push (@years, {value => substr($year,2,2), label => $year});
     }
     
-    $tokens = {form => $form,
+    %$tokens = (form => $form,
 	       layout_noleft => 1,
 	       layout_cartright => 1,
 	       items => cart->items,
 	       days => \@gift_days,
 	       months => \@months,
 	       years => \@years,
-    };
+    );
 
     if ($errors) {
         $tokens->{errors} = $errors;
