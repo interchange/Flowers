@@ -10,6 +10,7 @@ use Flowers::Products qw/product product_list/;
 use Flowers::Routes::Account;
 use Flowers::Routes::Cart;
 use Flowers::Routes::Checkout;
+use Flowers::Routes::Payment;
 use Flowers::Routes::Search;
 
 our $VERSION = '0.0001';
