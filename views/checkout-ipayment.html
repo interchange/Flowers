@@ -1,14 +1,17 @@
-<div class="main-cart">
 <form method="post"
       action="https://ipayment.de/merchant/99999/processor/2.0/">
   <!-- Base Parameter -->
-  <input type="hidden" name="trxuser_id" value="99999">
+  <input type="hidden" name="trxuser_id" value="99998">
   <input type="hidden" name="trxpassword" value="0">
   <!-- Amount and Currency for Payment -->
   <input type="hidden" name="trx_amount" value="5000">
   <input type="hidden" name="trx_currency" value="EUR">
   <!-- Paymenttyp: CC to make creditcard payment -->
   <input type="hidden" name="trx_paymenttyp" value="cc">
+  <!-- checksum -->
+
+  <input type="hidden" name="trx_securityhash"
+         value="db4812171baef817dec0cd56c0f5c8cd">
   <!-- URL and Parameter for Redirect back to Shop -->
   <input type="hidden" name="redirect_url"
          value="http://linuxia.de:3796/payment/success">
@@ -55,4 +58,3 @@
   <input type="submit" name="form_submit"
          value="Process payment">
 </form>
-</div>
