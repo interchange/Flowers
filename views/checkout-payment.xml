@@ -4,14 +4,15 @@
 <value name="payment_error" class="payment-error"/>
 </container>
 <form name="payment" link="name">
-<field name="name"/>
-<field name="street_address"/>
-<field name="zip"/>
-<field name="city"/>
-<!-- credit card fields -->
-<field name="cc_number"/>
-<field name="cvc_number"/>
-<field name="cc_month" iterator="months"/>
-<field name="cc_year" iterator="years"/>
+<field name="addr_name"/>
+<field name="addr_street"/>
+<field name="addr_zip"/>
+<field name="addr_city"/>
+<field name="addr_telefon"/>
+<field name="addr_email"/>
+<!-- These are here just to clear them -->
+<!-- <field name="cc_number"/>
+<field name="cc_expdate_month"/>
+<field name="cc_checkcode"/> -->
 </form>
 </specification>

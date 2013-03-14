@@ -18,9 +18,46 @@ get '/checkout' => sub {
 
     $form = form('giftinfo');
     $form->valid(0);
-    
     template 'checkout-giftinfo', checkout_tokens($form);
 };
+
+get '/checkout-payment' => sub {
+    # get the params
+    my %params = params();
+    debug to_dumper(\%params);
+    my %safe;
+    # fill the form with the values bounced back from the remote server.
+    # not all, but just the values set there.
+    my $form = form('payment');
+    foreach my $f (qw/addr_name
+                      addr_street
+                      addr_zip
+                      addr_city
+                      addr_telefon
+                      addr_email/) {
+        $safe{$f} = $params{$f}
+    }
+    $form->fill(\%safe);
+
+    $form->action("https://ipayment.de/merchant/99999/processor/2.0/");
+
+    # also, pick the ret_errormsg from the server. We can't know
+    # anything about that.
+    return template 'checkout-payment',
+      { form => $form,
+        payment_error => $params{ret_errormsg}
+      };
+};
+
+get '/checkout-success' => sub {
+    my %params = params();
+    debug to_dumper(\%params);
+    # here we will do all the needed test and approve/save. It could
+    # be also a hidden trigger.
+    session->destroy; # maybe?
+    return template 'checkout-thanks' => {};
+};
+
 
 post '/checkout' => sub {
     my ($form, $values, $validator, $error_ref, $form_last);
@@ -66,7 +103,10 @@ post '/checkout' => sub {
             # display checkout-thanks, destroying the session, maybe,
             # or at least clearing the cart
             debug cart->total;
-	    template 'checkout-payment', checkout_tokens($form);
+            # to avoid confusion with actions not set and alike, we
+            # redirect to the second step, where it's bounced by the
+            # ipayment server in case of error.
+            return redirect '/checkout-payment';
 	}
 };
 

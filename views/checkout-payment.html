@@ -15,34 +15,60 @@
 		<div class="alert">Prosimo, izpolnite zahtevana polja: Ime in priimek, Naslov, Pošta, Kraj.</div>
 		<div class="payment-error">Payment failed!</div>
 
-		<form name="payment" class="frm-default" action="/checkout" method="POST">
+		<form name="payment" class="frm-default"
+              action="https://ipayment.de/merchant/99999/processor/2.0/" 
+              method="POST">
 
 			<fieldset>
+              <!-- fields for ipayment, to be replace with session -->
+              <input type="hidden" name="trxuser_id" value="99998" />
+              <input type="hidden" name="trxpassword" value="0" />
+              <!-- Amount and Currency for Payment -->
+              <input type="hidden" name="trx_amount" value="5000" />
+              <input type="hidden" name="trx_currency" value="EUR" />
+              <!-- Paymenttyp: CC to make creditcard payment -->
+              <input type="hidden" name="trx_paymenttyp" value="cc" />
+              <!-- checksum -->
+              <input type="hidden" name="trx_securityhash"
+                     value="db4812171baef817dec0cd56c0f5c8cd">
+              <input type="hidden" name="silent" value="1" />
+              <input type="hidden" name="redirect_url"
+                     value="http://linuxia.de:3796/checkout-success"/>
+              <input type="hidden" name="trx_securityhash"
+                     value="db4812171baef817dec0cd56c0f5c8cd"/>
+              <input type="hidden" name="silent_error_url"
+                     value="http://linuxia.de:3796/checkout-payment"/>
+
+
+
 			<legend>Plačik</legend>
 			<ul>
 				<li>
 					<label>Ime in priimek</label>
-					<input type="text" name="name"/>
+					<input type="text" name="addr_name"
+                           value="" />
 				</li>
 				<li>
 					<label>Naslov</label>
-					<input type="text" name="street_address"/>
+					<input type="text" name="addr_street"/>
 				</li>
 				<li>
 					<label>Pošta in kraj</label>
-					<input type="text" name="zip" class="fld-small" /> <input type="text" name="city"/>
+					<input type="text" name="addr_zip" class="fld-small" />
+                    <input type="text" name="addr_city"/>
 				</li>
 				<li>
 					<label>Država</label>
-					<input type="text" disabled value="Slovenija" />
+					<input type="text" disabled="disabled"
+                           name="addr_country" value="SLO" />
 				</li>
 				<li>
 					<label>Telefon</label>
-					<input type="text" name="phone"/>
+					<input type="text" name="addr_telefon"/>
 				</li>
 				<li>
 					<label>E-mail naslov</label>
-					<input type="text" name="email"/>
+					<input type="text" name="addr_email"/>
 				</li>
 			</ul>
 			</fieldset>
@@ -70,20 +96,53 @@
 				</li>
 	<li>
 					<label>Številka kartice</label>
-					<input type="text" name="cc_number" autocomplete="off"/>
+					<input type="text" name="cc_number" autocomplete="off"
+                           value="371449635398431"/>
 				</li>
 				<li>
 					<label>Varnostna koda (CVC)</label>
-					<input type="text" class="fld-small" name="cvc_number" autocomplete="off"/> <a href=""><img src="img/i_info-small.png" style="margin-bottom: -5px;" /></a>
+					<input type="text" class="fld-small" name="cc_checkcode"
+                           autocomplete="off"/>
+                    <a href=""><img src="img/i_info-small.png"
+                                    style="margin-bottom: -5px;" /></a>
 				</li>
 				<li>
 					<label>Velja do (mesec/leto)</label>
-					<select class="fld-date" name="cc_month"><option>Mesec</option></select> <select class="fld-date" name="cc_year"><option>Leto</option></select>
+					<select class="fld-date" name="cc_expdate_month">
+                      <option>Month</option>
+                      <option>01</option>
+                      <option>02</option>
+                      <option>03</option>
+                      <option>04</option>
+                      <option>05</option>
+                      <option>06</option>
+                      <option>07</option>
+                      <option>08</option>
+                      <option>09</option>
+                      <option>10</option>
+                      <option>11</option>
+                      <option>12</option>
+                    </select>
+                    <select class="fld-date" name="cc_expdate_year">
+                          <option>Year</option>
+                          <option>2013</option>
+                          <option>2014</option>
+                          <option>2015</option>
+                          <option>2016</option>
+                          <option>2017</option>
+                          <option>2018</option>
+                          <option>2019</option>
+                          <option>2020</option>
+                          <option>2021</option>
+                          <option>2022</option>
+                          <option>2023</option>
+                          <option>2024</option>
+                    </select>
 				</li>
 			</ul>
 			</fieldset>
 
-			<input type="submit" value="Naprej na povzetek naročila" class="btn-submit" />
+			<input type="submit" value="Naprej na povzetek naročila" class="btn-submit" name="form_submit" />
 			
 		</form>
 
