@@ -4,6 +4,8 @@
 <value name="payment_error" class="payment-error"/>
 </container>
 <form name="payment" link="name">
+<field name="trx_securityhash"/>
+<field name="ipayment_session_id"/>
 <field name="addr_name"/>
 <field name="addr_street"/>
 <field name="addr_zip"/>

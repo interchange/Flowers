@@ -13,6 +13,11 @@ use Business::OnlinePayment::IPayment;
 use Flowers::Address;
 use Flowers::Transactions;
 
+
+my $ipayment;
+
+
+
 get '/checkout' => sub {
     my $form;
 
@@ -22,6 +27,17 @@ get '/checkout' => sub {
 };
 
 get '/checkout-payment' => sub {
+    unless (defined $ipayment) {
+        $ipayment = _init_ipayment();
+    }
+
+    # hardcoded, because the amout must be multiplied by 100. Crazy and scary
+    debug "Total in EUR:" . cart->total;
+    $ipayment->transactionType('preauth');
+    $ipayment->trxCurrency('EUR');
+    $ipayment->trxAmount(cart->total * 100);
+    debug "Total trx:" . $ipayment->trxAmount;
+
     # get the params
     my %params = params();
     debug to_dumper(\%params);
@@ -29,6 +45,7 @@ get '/checkout-payment' => sub {
     # fill the form with the values bounced back from the remote server.
     # not all, but just the values set there.
     my $form = form('payment');
+    $form->reset; # avoid stickiness
     foreach my $f (qw/addr_name
                       addr_street
                       addr_zip
@@ -37,10 +54,14 @@ get '/checkout-payment' => sub {
                       addr_email/) {
         $safe{$f} = $params{$f}
     }
+
+    # the relevant fields (building the session on the fly)
+    $safe{ipayment_session_id} = $ipayment->session_id;
+    $safe{trx_securityhash} = $ipayment->trx_securityhash;
+    # set the cgi location without hardcoding it
+    $form->action($ipayment->ipayment_cgi_location);
+
     $form->fill(\%safe);
-
-    $form->action("https://ipayment.de/merchant/99999/processor/2.0/");
-
     # also, pick the ret_errormsg from the server. We can't know
     # anything about that.
     return template 'checkout-payment',
@@ -157,5 +178,22 @@ sub checkout_tokens {
 
     return $tokens;
 }
+
+=head2 _init_ipayment
+
+Initialize the ipayment persistent object if it's not initialized.
+This operation takes some time, so we want to reuse it. We do this at
+run time to avoid troubles with forks, conf not loaded yet, etc.
+
+=cut
+
+sub _init_ipayment {
+    my $settings = config->{payment_method};
+    debug to_dumper($settings);
+    $ipayment = Business::OnlinePayment::IPayment->new(%$settings);
+    # that's it :-)
+}
+
+
 
 true;

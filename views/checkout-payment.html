@@ -16,31 +16,15 @@
 		<div class="payment-error">Payment failed!</div>
 
 		<form name="payment" class="frm-default"
-              action="https://ipayment.de/merchant/99999/processor/2.0/" 
+              action="https://example.net" 
               method="POST">
 
 			<fieldset>
-              <!-- fields for ipayment, to be replace with session -->
-              <input type="hidden" name="trxuser_id" value="99998" />
-              <input type="hidden" name="trxpassword" value="0" />
-              <!-- Amount and Currency for Payment -->
-              <input type="hidden" name="trx_amount" value="5000" />
-              <input type="hidden" name="trx_currency" value="EUR" />
-              <!-- Paymenttyp: CC to make creditcard payment -->
-              <input type="hidden" name="trx_paymenttyp" value="cc" />
-              <!-- checksum -->
-              <input type="hidden" name="trx_securityhash"
-                     value="db4812171baef817dec0cd56c0f5c8cd">
-              <input type="hidden" name="silent" value="1" />
-              <input type="hidden" name="redirect_url"
-                     value="http://linuxia.de:3796/checkout-success"/>
-              <input type="hidden" name="trx_securityhash"
-                     value="db4812171baef817dec0cd56c0f5c8cd"/>
-              <input type="hidden" name="silent_error_url"
-                     value="http://linuxia.de:3796/checkout-payment"/>
-
-
-
+                          <input type="hidden" name="trx_securityhash"
+                                 value="blablabla"/>
+                          <input type="hidden" name="ipayment_session_id"
+                                 value="blablabla"/>
+                          <input type="hidden" name="silent" value="1" />
 			<legend>Plačik</legend>
 			<ul>
 				<li>

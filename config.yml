@@ -46,7 +46,20 @@ locale: sl_SI
 
 # default payment method
 
-payment_method: ACI
+payment_method:
+  accountId: 99999
+  trxuserId: 99998
+  trxpassword: 0
+  adminactionpassword: '5cfgRT34xsdedtFLdfHxj7tfwx24fe'
+  app_security_key: 'testtest'
+  wsdl_file: 'ipayment.wsdl'
+  success_url: 'http://linuxia.de:3796/checkout-success'
+  failure_url: 'http://linuxia.de:3796/checkout-payment'
+
+# later we will add the hidden_trigger
+
+
+
 
 # template: "template_toolkit"
 # engines:
