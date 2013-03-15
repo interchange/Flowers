@@ -94,7 +94,7 @@ get '/checkout-payment' => sub {
 
 get '/checkout-success' => sub {
     my %params = params();
-    debug to_dumper(\%params);
+    # debug to_dumper(\%params);
     my $resp = Business::OnlinePayment::IPayment::Response->new(%params);
     my $amount = cart->total * 100;
     warning "Charging $amount";
@@ -138,9 +138,19 @@ post '/hidden-trigger' => sub {
     if ($host eq '212.227.34.218' or
         $host eq '212.227.34.219' or
         $host eq '212.227.34.220') {
-        debug "Triggered!";
+
         info "Got the response from the server!";
         info to_yaml(\%params);
+
+        # here we check again, but missing the details of the order, we can 
+        # only check the checksum.
+
+        my $resp = Business::OnlinePayment::IPayment::Response->new(%params);
+        $resp->set_credentials(my_userid => config->{payment_method}->{trxuserId},
+                               my_security_key => config->{payment_method}->{app_security_key});
+
+        info "Response is success?" . $resp->is_success;
+        info "Response is valid?"   . $resp->is_valid;
     } else {
         debug "Ignoring bogus host $host\n"
     }
