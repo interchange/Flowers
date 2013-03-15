@@ -44,12 +44,14 @@ get '/checkout-payment' => sub {
                            trxCurrency     => 'EUR',
                            trxAmount       => $total,
                            shopper_id      => $shopperid);
-
     debug "Total trx:" . $ipayment->trx_obj->trxAmount;
-    die "Couldn't get a shopper id" unless $ipayment->trx_obj->shopper_id;
+    unless ($ipayment->trx_obj->shopper_id and
+            $ipayment->trx_obj->trxAmount) {
+        # in case the session is broken, we can't proceed.
+        return redirect '/';
+    };
     # get the params
     my %params = params();
-    # debug to_dumper(\%params);
     my %safe;
     # fill the form with the values bounced back from the remote server.
     # not all, but just the values set there.
@@ -66,14 +68,16 @@ get '/checkout-payment' => sub {
 
     # the relevant fields (building the session on the fly)
     $safe{ipayment_session_id} = $ipayment->session_id;
-    debug to_dumper($ipayment->debug);
+    debug to_dumper($ipayment->debug->request->content);
     $safe{trx_securityhash}    = $ipayment->trx_securityhash;
-    # $safe{hidden_trigger_url}  = $ipayment->hidden_trigger_url;
+
     debug \%safe;
     unless ($safe{ipayment_session_id} and 
             $safe{trx_securityhash}) {
         warning "Cannot generate a session";
-        # what should we do here? We can't do the payment
+        # what should we do here? We can't do the payment. So redirect
+        # to /
+        return redirect '/';
     }
     # set the cgi location without hardcoding it
     $form->action($ipayment->ipayment_cgi_location);
@@ -83,6 +87,7 @@ get '/checkout-payment' => sub {
     # anything about that.
     return template 'checkout-payment',
       { form => $form,
+        # bounce the error from the remote server into the form
         payment_error => $params{ret_errormsg}
       };
 };
