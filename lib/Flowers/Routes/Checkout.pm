@@ -20,7 +20,12 @@ my $ipayment;
 
 get '/checkout' => sub {
     my $form;
-
+    my $shopper_id = int(rand(999999));
+    # assign a cart id: this is not working
+    # cart->id($shopper_id);
+    # debug "Assigned cart id:" . cart->id;
+    # so put it in the session
+    session 'ipayment_shopper_id' => $shopper_id;
     $form = form('giftinfo');
     $form->valid(0);
     template 'checkout-giftinfo', checkout_tokens($form);
@@ -30,17 +35,20 @@ get '/checkout-payment' => sub {
     unless (defined $ipayment) {
         $ipayment = _init_ipayment();
     }
-
     # hardcoded, because the amout must be multiplied by 100. Crazy and scary
     debug "Total in EUR:" . cart->total;
     $ipayment->transactionType('preauth');
     $ipayment->trxCurrency('EUR');
     $ipayment->trxAmount(cart->total * 100);
+
+    # $ipayment->shopper_id(cart->id);
+    $ipayment->shopper_id(cart->id || session->{ipayment_shopper_id});
+
     debug "Total trx:" . $ipayment->trxAmount;
-    debug cart->id;
+    die "Couldn't get a shopper id" unless $ipayment->shopper_id;
     # get the params
     my %params = params();
-    debug to_dumper(\%params);
+    # debug to_dumper(\%params);
     my %safe;
     # fill the form with the values bounced back from the remote server.
     # not all, but just the values set there.
@@ -57,7 +65,12 @@ get '/checkout-payment' => sub {
 
     # the relevant fields (building the session on the fly)
     $safe{ipayment_session_id} = $ipayment->session_id;
-    $safe{trx_securityhash} = $ipayment->trx_securityhash;
+    $safe{trx_securityhash}    = $ipayment->trx_securityhash;
+    unless ($safe{ipayment_session_id} and 
+            $safe{trx_securityhash}) {
+        warning "Cannot generate a session";
+        # what should we do here? We can't do the payment
+    }
     # set the cgi location without hardcoding it
     $form->action($ipayment->ipayment_cgi_location);
 
@@ -85,23 +98,28 @@ get '/checkout-success' => sub {
     $resp->set_credentials(%ipacc);
     my $uri = request->uri_base . request->request_uri;
     unless ($resp->url_is_valid($uri)) {
-        warning "The parameters look tampered!: $resp->validation_errors";
+        warning "The parameters look tampered!:" . $resp->validation_errors;
         status 400;
         return "There are problems with your order: this issue has been reported"
     }
     if ($resp->is_success and $resp->is_valid) {
-        debug "Clearing the cart";
-        # here the data should be saved, with the $resp->ret_authcode
-        # et. alii or simply dumping %params to yaml, as it has been
-        # double checked (urls untampered, params matching"
-        info to_yaml(\%params);
-        cart->clear;
-        return template 'checkout-thanks';
+        # debug "Clearing the cart" . cart->id;
+        my $shopper_id = cart->id || session->{ipayment_shopper_id};
+        if ($resp->shopper_id eq $shopper_id) {
+            # here the data should be saved, with the $resp->ret_authcode
+            # et. alii or simply dumping %params to yaml, as it has been
+            # double checked (urls untampered, params matching"
+            info to_yaml(\%params);
+            cart->clear;
+            return template 'checkout-thanks';
+        } else {
+            warning "Cart id and shopper id don't match!" . cart->id . " and " .
+              $resp->shopper_id;
+        }
     }
-    else {
-        warning $resp->validation_errors;
-        return "There are problems with your order. This issue has been reported"
-    }
+    warning $resp->validation_errors;
+    # mail out the %params
+    return "There are problems with your order. This issue has been reported"
 };
 
 
