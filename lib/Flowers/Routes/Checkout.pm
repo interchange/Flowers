@@ -37,7 +37,7 @@ get '/checkout-payment' => sub {
     $ipayment->trxCurrency('EUR');
     $ipayment->trxAmount(cart->total * 100);
     debug "Total trx:" . $ipayment->trxAmount;
-
+    debug cart->id;
     # get the params
     my %params = params();
     debug to_dumper(\%params);
@@ -73,10 +73,36 @@ get '/checkout-payment' => sub {
 get '/checkout-success' => sub {
     my %params = params();
     debug to_dumper(\%params);
-    # here we will do all the needed test and approve/save. It could
-    # be also a hidden trigger.
-    session->destroy; # maybe?
-    return template 'checkout-thanks' => {};
+    my $resp = Business::OnlinePayment::IPayment::Response->new(%params);
+    my $amount = cart->total * 100;
+    debug $amount;
+    my %ipacc = (
+                 my_amount => $amount,
+                 my_currency => "EUR", # cart doesn't seem to provide
+                 my_userid => config->{payment_method}->{trxuserId},
+                 my_security_key => config->{payment_method}->{app_security_key}
+                 );
+    debug to_dumper(\%ipacc);
+    $resp->set_credentials(%ipacc);
+    debug $resp->is_success;
+    debug $resp->is_valid;
+    if ($resp->is_success and $resp->is_valid) {
+        # store the order, it's all good cart->clear; # with this I
+        # have Too late to set another cookie, headers already built
+        # at Dancer/Response.pm line 170
+        # session->destroy;
+        debug "Clearing the cart";
+        cart->clear;
+        return template 'checkout-thanks';
+    }
+    else {
+        # here we have troubles, because it looks like the client
+        # tampered with the data.
+        warning $resp->validation_errors;
+        # here we could mail out with all the details.
+        # warning to_dumper($resp);
+        return "There are problems with your order. This issue has been reported"
+    }
 };
 
 
