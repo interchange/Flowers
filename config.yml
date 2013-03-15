@@ -52,14 +52,11 @@ payment_method:
   trxpassword: 0
   adminactionpassword: '5cfgRT34xsdedtFLdfHxj7tfwx24fe'
   app_security_key: 'testtest'
+  # relative to the app dir; absolute url should work too
   wsdl_file: 'ipayment.wsdl'
-  success_url: 'http://linuxia.de:3796/checkout-success'
-  failure_url: 'http://linuxia.de:3796/checkout-payment'
-
-# later we will add the hidden_trigger
-
-
-
+  success_url: 'http://flowers.linuxia.de/checkout-success'
+  failure_url: 'http://flowers.linuxia.de/checkout-payment'
+  hidden_trigger_url: 'http://flowers.linuxia.de/hidden-trigger'
 
 # template: "template_toolkit"
 # engines:
