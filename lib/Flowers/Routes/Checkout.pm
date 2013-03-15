@@ -75,32 +75,31 @@ get '/checkout-success' => sub {
     debug to_dumper(\%params);
     my $resp = Business::OnlinePayment::IPayment::Response->new(%params);
     my $amount = cart->total * 100;
-    debug $amount;
+    warning "Charging $amount";
     my %ipacc = (
                  my_amount => $amount,
                  my_currency => "EUR", # cart doesn't seem to provide
                  my_userid => config->{payment_method}->{trxuserId},
                  my_security_key => config->{payment_method}->{app_security_key}
                  );
-    debug to_dumper(\%ipacc);
     $resp->set_credentials(%ipacc);
-    debug $resp->is_success;
-    debug $resp->is_valid;
+    my $uri = request->uri_base . request->request_uri;
+    unless ($resp->url_is_valid($uri)) {
+        warning "The parameters look tampered!: $resp->validation_errors";
+        status 400;
+        return "There are problems with your order: this issue has been reported"
+    }
     if ($resp->is_success and $resp->is_valid) {
-        # store the order, it's all good cart->clear; # with this I
-        # have Too late to set another cookie, headers already built
-        # at Dancer/Response.pm line 170
-        # session->destroy;
         debug "Clearing the cart";
+        # here the data should be saved, with the $resp->ret_authcode
+        # et. alii or simply dumping %params to yaml, as it has been
+        # double checked (urls untampered, params matching"
+        info to_yaml(\%params);
         cart->clear;
         return template 'checkout-thanks';
     }
     else {
-        # here we have troubles, because it looks like the client
-        # tampered with the data.
         warning $resp->validation_errors;
-        # here we could mail out with all the details.
-        # warning to_dumper($resp);
         return "There are problems with your order. This issue has been reported"
     }
 };
