@@ -37,15 +37,16 @@ get '/checkout-payment' => sub {
     }
     # hardcoded, because the amout must be multiplied by 100. Crazy and scary
     debug "Total in EUR:" . cart->total;
-    $ipayment->transactionType('preauth');
-    $ipayment->trxCurrency('EUR');
-    $ipayment->trxAmount(cart->total * 100);
+    my $total = cart->total * 100;
+    my $shopperid = cart->id || session->{ipayment_shopper_id};
 
-    # $ipayment->shopper_id(cart->id);
-    $ipayment->shopper_id(cart->id || session->{ipayment_shopper_id});
+    $ipayment->transaction(transactionType => 'preauth',
+                           trxCurrency     => 'EUR',
+                           trxAmount       => $total,
+                           shopper_id      => $shopperid);
 
-    debug "Total trx:" . $ipayment->trxAmount;
-    die "Couldn't get a shopper id" unless $ipayment->shopper_id;
+    debug "Total trx:" . $ipayment->trx_obj->trxAmount;
+    die "Couldn't get a shopper id" unless $ipayment->trx_obj->shopper_id;
     # get the params
     my %params = params();
     # debug to_dumper(\%params);
@@ -250,7 +251,7 @@ run time to avoid troubles with forks, conf not loaded yet, etc.
 sub _init_ipayment {
     my $settings = config->{payment_method};
     debug to_dumper($settings);
-    $ipayment = Business::OnlinePayment::IPayment->new(%$settings);
+    return Business::OnlinePayment::IPayment->new(%$settings);
     # that's it :-)
 }
 
