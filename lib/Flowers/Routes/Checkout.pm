@@ -65,7 +65,10 @@ get '/checkout-payment' => sub {
 
     # the relevant fields (building the session on the fly)
     $safe{ipayment_session_id} = $ipayment->session_id;
+    debug to_dumper($ipayment->debug);
     $safe{trx_securityhash}    = $ipayment->trx_securityhash;
+    # $safe{hidden_trigger_url}  = $ipayment->hidden_trigger_url;
+    debug \%safe;
     unless ($safe{ipayment_session_id} and 
             $safe{trx_securityhash}) {
         warning "Cannot generate a session";
@@ -122,6 +125,12 @@ get '/checkout-success' => sub {
     return "There are problems with your order. This issue has been reported"
 };
 
+post '/hidden-trigger' => sub {
+    my %params = params();
+    debug "Triggered!";
+    info to_yaml(\%params);
+    info "Got the response from the server!";
+};
 
 post '/checkout' => sub {
     my ($form, $values, $validator, $error_ref, $form_last);
