@@ -25,7 +25,7 @@ WriteMakefile(
 	'DateTime' => 0,
 	'DateTime::Locale' => 0,
 	'Input::Validator' => 0,
-        'Business::OnlinePayment::IPayment' => 0.02,
+        'Business::OnlinePayment::IPayment' => 0.03,
 	'Moo' => 0.009013,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
