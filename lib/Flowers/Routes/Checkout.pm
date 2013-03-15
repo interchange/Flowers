@@ -127,9 +127,17 @@ get '/checkout-success' => sub {
 
 post '/hidden-trigger' => sub {
     my %params = params();
-    debug "Triggered!";
-    info to_yaml(\%params);
-    info "Got the response from the server!";
+    my $host = request->remote_address;
+    debug "Processing post coming from $host";
+    if ($host eq '212.227.34.218' or
+        $host eq '212.227.34.219' or
+        $host eq '212.227.34.220') {
+        debug "Triggered!";
+        info "Got the response from the server!";
+        info to_yaml(\%params);
+    } else {
+        debug "Ignoring bogus host $host\n"
+    }
 };
 
 post '/checkout' => sub {
