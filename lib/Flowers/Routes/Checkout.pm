@@ -50,23 +50,35 @@ get '/checkout-payment' => sub {
         # in case the session is broken, we can't proceed.
         return redirect '/';
     };
-    # get the params
+    # validate the parameters
     my %params = params();
     my %safe;
-    # fill the form with the values bounced back from the remote server.
-    # not all, but just the values set there.
     my $form = form('payment');
-    $form->reset; # avoid stickiness
-    foreach my $f (qw/addr_name
-                      addr_street
-                      addr_zip
-                      addr_city
-                      addr_telefon
-                      addr_email/) {
-        $safe{$f} = $params{$f}
-    }
+    $form->reset;       # avoid stickiness
 
-    # the relevant fields (building the session on the fly)
+    if (%params) {
+        my $uri = request->uri_base . request->request_uri;
+        debug "Checking params for $uri";
+        debug to_dumper(\%params);
+        my $resp = $ipayment->get_response_obj($uri);
+        if ($resp->url_is_valid) {
+            # fill the form with the values bounced back from the remote server.
+            # not all, but just the values set there.
+            foreach my $f (qw/addr_name
+                              addr_street
+                              addr_zip
+                              addr_city
+                              addr_telefon
+                              addr_email/) {
+                $safe{$f} = $params{$f}
+            }
+        }
+        else {
+            warning "Paramaters look tampered";
+            return redirect '/';
+        }
+    }
+            # the relevant fields (building the session on the fly)
     $safe{ipayment_session_id} = $ipayment->session_id;
     debug to_dumper($ipayment->debug->request->content);
     $safe{trx_securityhash}    = $ipayment->trx_securityhash;
