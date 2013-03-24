@@ -207,14 +207,8 @@ post '/checkout' => sub {
 	    $form->valid(1);
 
 	    $form = form('payment');
-            # here we have to do the soap request creating the session
-            # then we intercept the client on another route and
-            # display checkout-thanks, destroying the session, maybe,
-            # or at least clearing the cart
-            debug cart->total;
-            # to avoid confusion with actions not set and alike, we
-            # redirect to the second step, where it's bounced by the
-            # ipayment server in case of error.
+            # if the form is valid, we just redirect to the
+            # checkout-payment
             return redirect '/checkout-payment';
 	}
 };
