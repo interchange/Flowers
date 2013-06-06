@@ -2,7 +2,7 @@
 #
 # Dancer application startup script.
 #
-# Copyright (C) 2011 Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright (C) 2011-2012 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -73,7 +73,11 @@ fi
 
 # workers
 if [ -z "$DANCER_WORKERS" ]; then
-    DANCER_WORKERS="5"
+    if [ "$DANCER_ENVIRONMENT" != "production" ]; then
+        DANCER_WORKERS="2"
+    else 
+        DANCER_WORKERS="5"
+    fi
 fi
 
 DANCER_CMD=$(which plackup)
