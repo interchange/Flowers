@@ -8,6 +8,8 @@
 <field name="street_address"/>
 <field name="zip"/>
 <field name="city"/>
+<field name="phone"/>
+<field name="email"/>
 <!-- credit card fields -->
 <field name="cc_number"/>
 <field name="cvc_number"/>
