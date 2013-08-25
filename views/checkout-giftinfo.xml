@@ -14,5 +14,6 @@
 <field name="day" iterator="days"/>
 <field name="month" iterator="months"/>
 <field name="time"/>
+<field name="phone"/>
 </form>
 </specification>
