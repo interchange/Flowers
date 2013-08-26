@@ -44,10 +44,6 @@ session: "Storable"
 
 locale: sl_SI
 
-# default payment method
-
-payment_method: ACI
-
 # template: "template_toolkit"
 # engines:
 #   template_toolkit:
