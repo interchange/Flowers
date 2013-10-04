@@ -4,7 +4,6 @@ use Dancer ':syntax';
 use Dancer::Plugin::Form;
 use Dancer::Plugin::Nitesi;
 
-use Flowers::Navigation;
 use Flowers::Products qw/product product_list/;
 
 use Flowers::Routes::Account;
@@ -75,8 +74,9 @@ sub navigation {
     my $path = shift;
     my $nav;
     
-    $nav = Flowers::Navigation->new(uri => $path);
-
+    $nav = shop_navigation->search(uri => $path);
+debug "Navigation for $path, ", $nav;
+    
     if ($nav->code && ! $nav->inactive) {
 	return $nav;
     }
