@@ -18,6 +18,8 @@ WriteMakefile(
         'YAML'       => 0,
         'Dancer'     => 1.3080,
 	'Dancer::Session::Storable' => 0,
+    'Dancer::Plugin::Database' => 0,
+    'DBD::mysql' => 0,
 	'Dancer::Plugin::Nitesi' => 0.0032,
 	'Template::Flute' => 0.0024,
 	'Dancer::Template::TemplateFlute' => 0.0025,
