@@ -3,11 +3,11 @@ package Flowers;
 use Dancer ':syntax';
 use Dancer::Plugin::Form;
 use Dancer::Plugin::Nitesi;
+use Dancer::Plugin::Nitesi::Routes;
 
 use Flowers::Products qw/product product_list/;
 
 use Flowers::Routes::Account;
-use Flowers::Routes::Cart;
 use Flowers::Routes::Checkout;
 use Flowers::Routes::Payment;
 use Flowers::Routes::Search;
@@ -21,68 +21,22 @@ hook 'before_template' => sub {
     $tokens->{total} = cart->total;
     $tokens->{main_menu} = query->select(table => 'navigation',
 					 type => 'category',
-					 where => {});					 
+					 where => {});
 };
 
-get qr{/?(?<path>.*)} => sub {
-    my ($path, $nav, $ret, $rel, $prefix, $form, $products, $sort);
+get '/' => sub {
+    my ($form, $sort, $products);
 
-    $path = captures->{path};
-
-    if (length($path) == 0) {
-	$form = form('sort');
+    $form = form('sort');
 	$sort = param('sort');
-	$form->fill(sort => $sort);
-	
-	$products = product_list(sort  => $sort);
-    } elsif ($nav = navigation($path)) {
-	$form = form('sort');
-	$sort = param('sort');
+    $form->fill(sort => $sort);
 
-	$products = $nav->products(sort => $sort);
-    }
-    elsif ($ret = product($path)) {
-	# get related products
-	if ($ret->{sku} =~ /^(.*?)(-[^-]*?)$/) {
-	    $prefix = $1;
-	    $rel = query->select(table => 'products',
-				 fields => [qw/sku name price/],
-				 where => {sku => {'-like' => "$prefix%"}},
-				 order => 'price asc',
-		);
-
-	    $ret->{options} = $rel;
-	}
-
-	# no right sidebar
-	$ret->{layout_noright} = 1;
-	
-	return template 'product', $ret;
-    }
-    else {
-	$products = [];
-    }
+    $products = product_list(sort  => $sort);
 
     template 'listing', {products => $products, sort => $sort, form => $form};
 };
 
-sub menu {
-    # pulls out menu data from navigation table
-};
-
-sub navigation {
-    my $path = shift;
-    my $nav;
-    
-    $nav = shop_navigation->search(uri => $path);
-debug "Navigation for $path, ", $nav;
-    
-    if ($nav->code && ! $nav->inactive) {
-	return $nav;
-    }
-
-    return;
-}
+shop_setup_routes;
 
 true; 
 
