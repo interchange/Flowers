@@ -1,5 +1,6 @@
 package Flowers::Address;
 
+use Dancer::Plugin::Nitesi;
 use Moo;
 
 has uid => (
@@ -41,5 +42,25 @@ has state_code => (
 has country_code => (
     is => 'rw',
 );
+
+sub save {
+    my $self = shift;
+    my %data;
+
+    %data = (uid => $self->uid || 0,
+	     type => $self->type,
+	     state_code => $self->state_code,
+	     first_name => $self->first_name,
+	     last_name => $self->last_name,
+	     street_address => $self->street_address,
+	     zip => $self->zip,
+	     city => $self->city,
+	     phone => $self->phone || '',
+	     country_code => $self->country_code,
+	     state_code => $self->state_code || '',
+	);
+
+    query->insert('addresses', \%data);
+}
 
 1;
