@@ -60,7 +60,7 @@ get '/login' => sub {
 post '/login' => sub {
     my ($acct, $continue);
 
-    $continue = account->status('login_continue');
+    $continue = account->status('login_continue') || '';
     
     if (account->login(username => params('body')->{email},
 		       password => params('body')->{password})) {
