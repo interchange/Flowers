@@ -77,4 +77,9 @@ post '/login' => sub {
 		       layout_noright => 1};
 };
 
+get '/logout' => sub {
+    account->logout();
+    redirect '/';
+};
+
 1;
