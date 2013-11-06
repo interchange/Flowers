@@ -9,6 +9,7 @@ use Flowers::Products qw/product product_list/;
 
 use Flowers::Routes::Account;
 use Flowers::Routes::Checkout;
+use Flowers::Routes::Item;
 use Flowers::Routes::Payment;
 use Flowers::Routes::Search;
 

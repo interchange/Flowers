@@ -1,6 +1,7 @@
 <specification>
 <value name="sku"/>
 <value name="name"/>
+<value name="short_description" class="crumb"/>
 <value name="product-image" field="sku" filter="image" target="src"/>
 <value name="description" class="product-teaser"/>
 <list name="options" class="product-options-item" iterator="options">
