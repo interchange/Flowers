@@ -37,8 +37,7 @@ engines:
         class: "Flowers::Filters::Image"
 
 # session engine
-
-session: "Storable"
+session: YAML
 
 # site locale
 
