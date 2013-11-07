@@ -37,17 +37,9 @@ engines:
         class: "Flowers::Filters::Image"
 
 # session engine
-
-session: "Storable"
+session: YAML
 
 # site locale
 
 locale: sl_SI
-
-# template: "template_toolkit"
-# engines:
-#   template_toolkit:
-#     encoding:  'utf8'
-#     start_tag: '[%'
-#     end_tag:   '%]'
 
