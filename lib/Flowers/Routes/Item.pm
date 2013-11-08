@@ -3,7 +3,6 @@ package Flowers::Routes::Item;
 use strict;
 use Dancer ':syntax';
 use Flowers::Products qw(product);
-use Data::Dumper;
 
 get '/product/:seo/:sku' => sub {
     my $product = product(
@@ -13,8 +12,7 @@ get '/product/:seo/:sku' => sub {
         $product = $product->[0];
     }
 
-    debug 'product ', join ',', %$product;
-
+    debug 'product ', $product;
     template 'product', $product;
 };
 

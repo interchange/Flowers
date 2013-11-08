@@ -10,6 +10,7 @@ use vars '@EXPORT_OK';
 use DBI;
 use IC6::Schema;
 use IC6::Schema::Result::Product;
+use Data::Dumper;
 
 our (@connection, $db);
 
@@ -26,8 +27,20 @@ sub product {
     # check whether product is available
     my $rs = $db->resultset('Product');
     $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
-    $result = $rs->search({ sku => $path, active => 1, })->next();
-	return $result->{_column_data};
+    $result = $rs->search(
+        { sku => $path, 'me.active' => 1, },
+        { prefetch => 'sku_class' },
+    )->single();
+
+    #warn 'product row: ', Data::Dumper->Dump(['product', $result->{_column_data}]), "\n";
+
+    my $product = {
+        (map { $_ => $result->$_ } qw(sku name short_description description price uri weight priority gtin canonical_sku active)),
+        product_class => {
+            map { $_ => $result->sku_class->$_ } qw(sku_class manufacturer name short_description uri active),
+        },
+    };
+	return $product;
 }
 
 =head2 product_list
