@@ -51,3 +51,11 @@ locale: sl_SI
 #     start_tag: '[%'
 #     end_tag:   '%]'
 
+# sample DBIC plugin configuration, please override in environments/*
+plugins:
+  DBIC:
+    default:
+      dsn: dbi:mysql:ic6
+      user: flowerpower
+      pass: nevairbe
+      schema_class: IC6::Schema
