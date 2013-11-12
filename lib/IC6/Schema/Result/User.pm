@@ -1,223 +1,116 @@
 use utf8;
 package IC6::Schema::Result::User;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-IC6::Schema::Result::User
-
-=cut
-
 use strict;
 use warnings;
 
-use base 'DBIx::Class::Core';
+use DBIx::Class::Candy (
+	  -components => [qw( EncodedColumn InflateColumn::DateTime Core )],
+  );
 
-=head1 TABLE: C<users>
+############################################################################
+# Table definition.
 
-=cut
+table 'users';
 
-__PACKAGE__->table("users");
+############################################################################
+## Field definition.
 
-=head1 ACCESSORS
+primary_column users_id => {
+  data_type			=>  'bigint',
+  is_nullable		=> 0,
+  is_auto_increment => 1,
+  is_numeric        => 1,
+  extra				=> {unsigned => 1},
+};
 
-=head2 users_id
+column username	=> {
+  data_type     => 'varchar',
+  size          => 255,
+  is_nullable   => 0,
+};
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'users_users_id_seq'
+column email => {
+  data_type  => 'varchar',
+  size       => 255,
+  is_nullable => 0,
+  default_value =>'',
+};
 
-=head2 username
+column password => {
+  data_type     => 'varchar',
+  size          => 255,
+  is_nullable   => 0,
+  encode_column => 1,
+  encode_class  => 'Digest',
+  encode_args   => { algorithm => 'SHA-512', format => 'hex', salt_length => 10 },
+  encode_check_method => 'check_password',
+};
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
+column first_name => {
+  data_type       => 'varchar',
+  size            => 255,
+  is_nullable     => 0,
+};
 
-=head2 email
+column last_name => {
+  data_type      => 'varchar',
+  size           => 255,
+  is_nullable    => 0,
+};
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+column last_name => {
+  data_type      => 'datetime',
+  datetime_undef_if_invalid => 1,
+  is_nullable    => 0,
+};
 
-=head2 password
+column created => {
+  data_type    => 'datetime',
+  datetime_undef_if_invalid => 1,
+  is_nullable  => 0,
+};
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+column modified => {
+  data_type    => 'datetime',
+  datetime_undef_if_invalid => 1,
+  is_nullable  => 0,
+};
 
-=head2 first_name
+column active => {
+  data_type   => 'tinyint',
+  default_value => 1,
+  is_nullable  => 0,
+};
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+#########################################################################
+# Relation definition.
 
-=head2 last_name
+has_many addresses => 'IC6::Schema::Result::Address', {
+  'foreign.users_id' => 'self.users_id',
+  },  
+  { cascade_copy => 0, cascade_delete => 0 };
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-
-=head2 last_login
-
-  data_type: 'timestamp'
-  is_nullable: 0
-
-=head2 created
-
-  data_type: 'timestamp'
-  is_nullable: 0
-
-=head2 last_modified
-
-  data_type: 'timestamp'
-  is_nullable: 0
-
-=head2 active
-
-  data_type: 'boolean'
-  default_value: true
-  is_nullable: 0
-
-=cut
-
-__PACKAGE__->add_columns(
-  "users_id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-    sequence          => "users_users_id_seq",
+has_many carts => 'IC6::Schema::Result::Cart', {
+  'foreign.users_id' => 'self.users_id',
   },
-  "username",
-  { data_type => "varchar", is_nullable => 0, size => 255 },
-  "email",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "password",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "first_name",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "last_name",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "last_login",
-  { data_type => "timestamp", is_nullable => 0 },
-  "created",
-  { data_type => "timestamp", is_nullable => 0 },
-  "last_modified",
-  { data_type => "timestamp", is_nullable => 0 },
-  "active",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
-);
+  { cascade_copy => 0, cascade_delete => 0 };
 
-=head1 PRIMARY KEY
+has_many orders => 'IC6::Schema::Result::Order', {
+  'foreign.users_id' => 'self.users_id',
+  },
+  { cascade_copy => 0, cascade_delete => 0 };
 
-=over 4
+has_many user_attributes => 'IC6::Schema::Result::UserAttribute', {
+  'foreign.users_id' => 'self.users_id',
+  },
+  { cascade_copy => 0, cascade_delete => 0 };
 
-=item * L</users_id>
+has_many user_roles => 'IC6::Schema::Result::UserRole', {
+  'foreign.users_id' => 'self.users_id',
+  },
+  { cascade_copy => 0, cascade_delete => 0 };
 
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("users_id");
-
-=head1 RELATIONS
-
-=head2 addresses
-
-Type: has_many
-
-Related object: L<IC6::Schema::Result::Address>
-
-=cut
-
-__PACKAGE__->has_many(
-  "addresses",
-  "IC6::Schema::Result::Address",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 carts
-
-Type: has_many
-
-Related object: L<IC6::Schema::Result::Cart>
-
-=cut
-
-__PACKAGE__->has_many(
-  "carts",
-  "IC6::Schema::Result::Cart",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 orders
-
-Type: has_many
-
-Related object: L<IC6::Schema::Result::Order>
-
-=cut
-
-__PACKAGE__->has_many(
-  "orders",
-  "IC6::Schema::Result::Order",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 user_attributes
-
-Type: has_many
-
-Related object: L<IC6::Schema::Result::UserAttribute>
-
-=cut
-
-__PACKAGE__->has_many(
-  "user_attributes",
-  "IC6::Schema::Result::UserAttribute",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 user_roles
-
-Type: has_many
-
-Related object: L<IC6::Schema::Result::UserRole>
-
-=cut
-
-__PACKAGE__->has_many(
-  "user_roles",
-  "IC6::Schema::Result::UserRole",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 roles
-
-Type: many_to_many
-
-Composing rels: L</user_roles> -> role
-
-=cut
-
-__PACKAGE__->many_to_many("roles", "user_roles", "role");
-
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8lfuxYQvCHVW0GTmbVAf6w
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+many_to_many roles => 'userroles', 'role', { cascade_copy => 0, cascade_delete => 0 };
+#########################################################################
 1;
