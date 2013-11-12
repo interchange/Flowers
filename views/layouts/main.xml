@@ -1,8 +1,18 @@
 <specification>
+<!-- top navigation left -->
+<list name="nav-top-left" class="nav-top-left" iterator="nav-top-left">
+    <param name="label" class="nav-top-left-link" field="name"/>
+    <param name="uri" class="nav-top-left-link" target="href" op="append"/>
+</list>	
+<!-- top navigation right -->
+<list name="nav-top-right" class="nav-top-right" iterator="nav-top-right">
+    <param name="label" class="nav-top-right-link" field="name"/>
+    <param name="uri" class="nav-top-right-link" target="href" op="append"/>
+</list>
 <!-- main menu -->
-<list name="main" class="menu-main" iterator="main_menu">
-<param name="name" class="link-main"/>
-<param name="link-main" field="uri" target="href" op="append"/>
+<list name="main" class="nav-menu-main" iterator="nav-menu-main">
+    <param name="name" class="link-main" field = "name"/>
+    <param name="link-main" field="uri" target="href" op="append"/>
 </list>
 <value name="content" id="content" op="hook"/>
 <value name="total" class="cart-total" filter="currency"/>
