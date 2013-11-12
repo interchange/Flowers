@@ -7,17 +7,15 @@ use vars '@EXPORT_OK';
 
 @EXPORT_OK = qw(product product_list);
 
-use DBI;
 use IC6::Schema;
 use IC6::Schema::Result::Product;
+use Data::Dumper;
+use Dancer ':syntax';
+use Dancer::Plugin::DBIC;
 
-our (@connection, $db);
+our ($db);
 
-BEGIN {
-    @connection = ('dbi:mysql:database=ic6;host=localhost;mysql_socket=/home/jeff/camp13/mysql/tmp/mysql.13.sock','ic6','woc46mij');
-
-    $db = IC6::Schema->connect(@connection);
-}
+$db = schema('default');
 
 sub product {
     my ($path) = @_;
@@ -26,8 +24,20 @@ sub product {
     # check whether product is available
     my $rs = $db->resultset('Product');
     $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
-    $result = $rs->search({ sku => $path, active => 1, })->next();
-	return $result->{_column_data};
+    $result = $rs->search(
+        { sku => $path, 'me.active' => 1, },
+        { prefetch => 'sku_class' },
+    )->single();
+
+    #warn 'product row: ', Data::Dumper->Dump(['product', $result->{_column_data}]), "\n";
+
+    my $product = {
+        (map { $_ => $result->$_ } qw(sku name short_description description price uri weight priority gtin canonical_sku active)),
+        product_class => {
+            map { $_ => $result->sku_class->$_ } qw(sku_class manufacturer name short_description uri active),
+        },
+    };
+	return $product;
 }
 
 =head2 product_list
@@ -38,7 +48,7 @@ Returns a list of all products, ordered by priority.
 
 sub product_list {
     my (%args) = @_;
-    my ($order, $set);
+    my ($order, @set);
 
     $args{sort} ||= 'priority';
 
@@ -49,10 +59,11 @@ sub product_list {
         $order = 'priority ASC';
     }
 
-    $set = $db->resultset('Product')->search(undef, {
+    @set = $db->resultset('Product')->search(undef, {
         order_by => $order,
-    })->all();
-    return $set;
+    });
+
+    return \@set;
 }
 
 1;
