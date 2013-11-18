@@ -9,6 +9,18 @@
     <param name="label" class="nav-top-right-link" field="name"/>
     <param name="uri" class="nav-top-right-link" target="href" op="append"/>
 </list>
+<!-- top navigation login/logout -->
+<list name="nav-top-login" class="auth-top-login" iterator="auth-top-login">
+    <param name="label" class="auth-top-login-link" field="name"/>
+    <param name="uri" class="auth-top-login-link" target="href" op="append"/>
+</list>
+
+<!-- top navigation login/logout -->
+<list name="nav-top-logout" class="auth-top-logout" iterator="auth-top-logout">
+    <param name="label" class="auth-top-logout-link" field="name"/>
+    <param name="uri" class="auth-top-logout-link" target="href" op="append"/>
+</list>
+
 <!-- main menu -->
 <list name="main" class="nav-menu-main" iterator="nav-menu-main">
     <param name="name" class="link-main" field = "name"/>
