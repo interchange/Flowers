@@ -50,7 +50,7 @@ plugins:
       options:
         RaiseError: 1
         PrintError: 1
- Auth::Extensible:
+  Auth::Extensible:
     disable_roles: 0
     no_login_handler: 1
     login_page: /login
