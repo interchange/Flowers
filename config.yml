@@ -17,10 +17,7 @@ charset: "UTF-8"
 # include timestamp in log format
 logger_format: "%t [%P] %L @%D> %m in %f l. %l"
 
-# template engine
-# simple: default and very basic template engine
-# template_toolkit: TT
-
+# set template engine
 template: "template_flute"
 
 engines:
@@ -40,17 +37,9 @@ engines:
 session: "YAML"
 
 # site locale
-
 locale: sl_SI
 
-# template: "template_toolkit"
-# engines:
-#   template_toolkit:
-#     encoding:  'utf8'
-#     start_tag: '[%'
-#     end_tag:   '%]'
-
-# sample DBIC plugin configuration, please override in environments/*
+# sample DBIC and DPAE plugin configuration, please override in environments/*
 plugins:
   DBIC:
     default:
@@ -61,8 +50,6 @@ plugins:
       options:
         RaiseError: 1
         PrintError: 1
-
-# sample DPAE configuration
  Auth::Extensible:
     disable_roles: 0
     no_login_handler: 1
