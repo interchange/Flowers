@@ -56,9 +56,9 @@ hook 'before_template' => sub {
 
     $tokens->{form} ||= form;
     $tokens->{total} = cart->total;
-#    $tokens->{main_menu} = query->select(table => 'navigation',
-#					 type => 'category',
-#					 where => {});
+    $tokens->{main_menu} = query->select(table => 'navigation',
+					 type => 'category',
+					 where => {});
 };
 
 get '/' => sub {
