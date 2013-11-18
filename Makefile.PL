@@ -29,6 +29,8 @@ WriteMakefile(
 	'Input::Validator' => 0,
 	'Business::OnlinePayment' => 3.01,
 	'Moo' => 0.009013,
+    'DBIx::Class' => 0,
+    'Dancer::Plugin::DBIC' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Flowers-*' },

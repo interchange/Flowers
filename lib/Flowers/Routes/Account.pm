@@ -3,25 +3,42 @@ package Flowers::Routes::Account;
 use Dancer ':syntax';
 use Dancer::Plugin::Nitesi;
 use Dancer::Plugin::Form;
+use Dancer::Plugin::DBIC;
+use Dancer::Plugin::Auth::Extensible qw(
+logged_in_user authenticate_user user_has_role require_role
+require_login require_any_role
+);
 
 use Input::Validator;
+use DateTime qw();
+use DateTime::Duration qw();
+
+my $now = DateTime->now;
+
+# add default admin user for testing
+#my $admin_user =
+#        rset('User')
+#        ->create(
+#        { username => 'admin', password => 'admin', email => 'admin@localhost', created => $now } );
 
 get '/registration' => sub {
-    my $form;
-
-    $form = form('registration');
-    
-    template 'registration', {form => $form,
-			      layout_noleft => 1,
-			      layout_noright => 1};
+    template 'registration', {layout_noleft => 1,
+        layout_noright => 1};
 };
 
 post '/registration' => sub {
-    my ($form, $values, $validator, $error_ref, $acct);
+    my ($form, $values, $validator, $error_ref, $acct, $user, $role, $user_data, $user_role_id );
 
     $form = form('registration');
 
     $values = $form->values;
+    # id of user role
+    $user_role_id = '3';
+    $user_data = { username => $values->{email},
+                      email    => $values->{email},
+                      password => $values->{password},
+                      created => $now
+        };
 
     # validate form input
     $validator = new Input::Validator;
@@ -33,53 +50,61 @@ post '/registration' => sub {
     $validator->validate($values);
 
     if ($validator->has_errors) {
-	$error_ref = $validator->errors;
-	debug("Register errors: ", $error_ref);
-	$form->errors($error_ref);
-	$form->fill($values);
+    $error_ref = $validator->errors;
+    debug("Register errors: ", $error_ref);
+    $form->errors($error_ref);
+    $form->fill($values);
     }
     else {
-	# create account
-	debug("Register account: $values->{email}.");
-	$acct = account->create(email => $values->{email},
-				password => $values->{password});
-	debug("Register result: ", $acct || 'N/A');
+    # create account
+    #debug("Register account: $values->{email}.");
+    $acct = rset('User')->create( $user_data );
+
+    # find new user
+    my $user = rset('User')->single({ username => $values->{email} });
+
+    # add role
+    $role = rset('UserRole')->create( { users_id => $user->users_id, roles_id => $user_role_id  } );
+
+    #debug("Register result: ", $acct || 'N/A');
+    return redirect '/login';
     }
-    
+
     template 'registration', {form => $form,
-			      errors => $error_ref,
-			      layout_noleft => 1,
-			      layout_noright => 1};
+                  errors => $error_ref,
+                  layout_noleft => 1,
+                  layout_noright => 1};
+
 };
 
-get '/login' => sub {
-    template 'login', {layout_noleft => 1,
-		       layout_noright => 1};
+sub post_login_route {
+   return redirect '/' if logged_in_user;
+
+   my $login_route = '/login';
+
+   my $user = rset('User')->search( { username => params->{username} } )->single;
+   if ( !$user ) {
+        var login_failed => 1;
+        return forward $login_route, { return_url => params->{return_url} }, { method => 'get' };
+  }
+    my ($success, $realm) = authenticate_user( params->{username}, params->{password} );
+
+    if ($success) {
+        session logged_in_user => params->{username};
+        session logged_in_user_realm => $realm;
+        return redirect '/';
+    } else {
+    #something
+}
 };
 
-post '/login' => sub {
-    my ($acct, $continue);
-
-    $continue = account->status('login_continue') || '';
-    
-    if (account->login(username => params('body')->{email},
-		       password => params('body')->{password})) {
-	debug "Successful login for: ", params('body')->{email};
-
-	return redirect "/$continue";
-    }
-
-    debug "Login failed for: ", params('body')->{email};
-    
-    account->status(login_info => 'Invalid username or password.');
-    
-    template 'login', {layout_noleft => 1,
-		       layout_noright => 1};
-};
+post '/login' => \&post_login_route;
 
 get '/logout' => sub {
-    account->logout();
-    redirect '/';
+    template 'login', {layout_noleft => 1,
+        layout_noright => 1};
+    session->destroy;
+    return redirect '/';
 };
 
 1;

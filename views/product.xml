@@ -1,11 +1,15 @@
 <specification>
-<value name="sku"/>
-<value name="name"/>
-<value name="short_description" class="crumb"/>
+<value name="products.sku" class="sku" field="sku"/>
+<value name="products.name" class="name" field="name"/>
+<value name="products.weight" class="weight" field="weight"/>
+<value name="products.short_description" class="crumb" field="short_description"/>
 <value name="product-image" field="sku" filter="image" target="src"/>
-<value name="description" class="product-teaser"/>
+<value name="products.description" field="description" class="product-teaser"/>
+<value name="product_classes.manufacturer" class="manufacturer" field="product_class.manufacturer"/>
+<value name="product_classes.name" class="class_name" field="product_class.name"/>
+<value name="product_classes.short_description" class="class_description" field="product_class.short_description"/>
+<value name="products_classes.uri" class="uri" target="href" field="product_class.uri"/>
 <list name="options" class="product-options-item" iterator="options">
-<param name="name" class="product-options-name"/>
 <param name="price" class="product-options-price" filter="currency"/>
 <param name="sku" class="product-options-sku"/>
 </list>
