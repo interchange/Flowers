@@ -33,7 +33,7 @@ post '/registration' => sub {
 
     $values = $form->values;
     # id of user role
-    $user_role_id = '3';
+    $user_role_id = '3'; 
     $user_data = { username => $values->{email},
                       email    => $values->{email},
                       password => $values->{password},
@@ -59,12 +59,9 @@ post '/registration' => sub {
     # create account
     #debug("Register account: $values->{email}.");
     $acct = rset('User')->create( $user_data );
-
-    # find new user
-    my $user = rset('User')->single({ username => $values->{email} });
-
+   
     # add role
-    $role = rset('UserRole')->create( { users_id => $user->users_id, roles_id => $user_role_id  } );
+    $role = rset('UserRole')->create( { users_id => $acct->id, roles_id => $user_role_id  } );
 
     #debug("Register result: ", $acct || 'N/A');
     return redirect '/login';
