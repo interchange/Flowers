@@ -46,7 +46,7 @@ plugins:
       dsn: dbi:mysql:ic6
       user: flowerpower
       pass: nevairbe
-      schema_class: IC6::Schema
+      schema_class: Interchange6::Schema
       options:
         RaiseError: 1
         PrintError: 1
