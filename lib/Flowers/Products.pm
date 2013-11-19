@@ -7,8 +7,8 @@ use vars '@EXPORT_OK';
 
 @EXPORT_OK = qw(product product_list);
 
-use IC6::Schema;
-use IC6::Schema::Result::Product;
+use Interchange6::Schema;
+use Interchange6::Schema::Result::Product;
 use Data::Dumper;
 use Dancer ':syntax';
 use Dancer::Plugin::DBIC;
