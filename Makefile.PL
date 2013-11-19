@@ -31,8 +31,6 @@ WriteMakefile(
 	'Business::OnlinePayment' => 3.01,
 	'Moo' => 0.009013,
     'DBIx::Class' => 0,
-    'DBIx::Class::EncodedColumn' => 0,
-    'DBIx::Class::TimeStamp' => 0,
     'Dancer::Plugin::DBIC' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
