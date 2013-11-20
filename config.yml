@@ -57,6 +57,7 @@ plugins:
     logout_page: /logout
     denied_page: /login/denied
     no_default_pages: 1
+    no_api_change_warning: 1
     realms:
       users:
         provider: 'DBIC'
