@@ -7,15 +7,7 @@ use vars '@EXPORT_OK';
 
 @EXPORT_OK = qw(product product_list);
 
-use Interchange6::Schema;
-use Interchange6::Schema::Result::Product;
-use Data::Dumper;
-use Dancer ':syntax';
-use Dancer::Plugin::DBIC;
-
-our ($db);
-
-$db = schema('default');
+use Dancer::Plugin::Interchange6;
 
 sub product {
     my ($path) = @_;
@@ -59,11 +51,11 @@ sub product_list {
         $order = 'priority ASC';
     }
 
-    @set = $db->resultset('Product')->search(undef, {
+    $set = [shop_product->search(undef, {
         order_by => $order,
-    });
+    })];
 
-    return \@set;
+    return $set;
 }
 
 1;

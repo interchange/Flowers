@@ -1,6 +1,6 @@
 package Flowers::Address;
 
-use Dancer::Plugin::Nitesi;
+use Dancer::Plugin::Interchange6;
 use Moo;
 
 has uid => (

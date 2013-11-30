@@ -1,7 +1,7 @@
 package VSC::Routes::Search;
 
 use Dancer ':syntax';
-use Dancer::Plugin::Nitesi;
+use Dancer::Plugin::Interchange6;
 
 use Flowers::Products;
 

@@ -2,13 +2,9 @@ package Flowers;
 
 use Dancer ':syntax';
 use Dancer::Plugin::Form;
-use Dancer::Plugin::Nitesi;
-#use Dancer::Plugin::Nitesi::Routes;
-use Dancer::Plugin::DBIC;
-use Dancer::Plugin::Auth::Extensible qw(
-logged_in_user authenticate_user user_has_role require_role
-require_login require_any_role
-);
+use Dancer::Plugin::Interchange6;
+use Dancer::Plugin::Interchange6::Routes;
+use Dancer::Plugin::Auth::Extensible;
 use Flowers::Products qw/product product_list/;
 use Flowers::Routes::Account;
 use Flowers::Routes::Checkout;
@@ -56,9 +52,7 @@ hook 'before_template' => sub {
 
     $tokens->{form} ||= form;
     $tokens->{total} = cart->total;
-    $tokens->{main_menu} = query->select(table => 'navigation',
-					 type => 'category',
-					 where => {});
+    $tokens->{main_menu} = [shop_navigation->search({type => 'category'})];
 };
 
 get '/' => sub {
