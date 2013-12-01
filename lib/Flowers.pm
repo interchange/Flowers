@@ -5,6 +5,7 @@ use Dancer::Plugin::Form;
 use Dancer::Plugin::Interchange6;
 use Dancer::Plugin::Interchange6::Routes;
 use Dancer::Plugin::Auth::Extensible;
+use Dancer::Plugin::DBIC;
 use Flowers::Products qw/product product_list/;
 use Flowers::Routes::Account;
 use Flowers::Routes::Checkout;
@@ -87,7 +88,7 @@ get '/admin' => require_role admin => sub {
         layout_noright => 1}; 
 };
 
-#shop_setup_routes;
+shop_setup_routes;
 
 true; 
 

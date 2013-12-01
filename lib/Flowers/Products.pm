@@ -8,13 +8,14 @@ use vars '@EXPORT_OK';
 @EXPORT_OK = qw(product product_list);
 
 use Dancer::Plugin::Interchange6;
+use Dancer::Plugin::DBIC;
 
 sub product {
     my ($path) = @_;
     my ($result);
 
     # check whether product is available
-    my $rs = $db->resultset('Product');
+    my $rs = resultset('Product');
     $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
     $result = $rs->search(
         { sku => $path, 'me.active' => 1, },
@@ -40,7 +41,7 @@ Returns a list of all products, ordered by priority.
 
 sub product_list {
     my (%args) = @_;
-    my ($order, @set);
+    my ($order, $set);
 
     $args{sort} ||= 'priority';
 
