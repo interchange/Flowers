@@ -68,3 +68,6 @@ plugins:
         username_column: username
         password_column: password
         password_check: check_password
+  Interchange6::Routes:
+    cart:
+      template: checkout-giftinfo
