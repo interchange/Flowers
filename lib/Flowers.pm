@@ -19,6 +19,9 @@ hook 'before_layout_render' => sub {
 	my $tokens = shift;
     my $action = '';
 
+    # cart total
+    $tokens->{total} = cart->total;
+    
 	my $nav = schema->resultset('Navigation')->search(
 		 {
 		  type => 'nav',
@@ -52,7 +55,7 @@ hook 'before_template' => sub {
     my $tokens = shift;
 
     $tokens->{form} ||= form;
-    $tokens->{total} = cart->total;
+   
     $tokens->{main_menu} = [shop_navigation->search({type => 'category'})];
 };
 
