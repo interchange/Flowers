@@ -725,6 +725,12 @@ ul.subnav-l1 li ul.subnav-l2 li a:hover, ul.subnav-l1 li ul.subnav-l2 li.selecte
 	color: #888974;
 	}
 
+li.crumb-nav, li.product-nav {
+    display: inline;
+    background: none;
+    padding-left: 3px;
+}
+
 .product-gallery {
 	width: 360px;
 	float: left;
