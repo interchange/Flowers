@@ -79,7 +79,7 @@ sub post_login_route {
 
    my $login_route = '/login';
 
-   my $user = rset('User')->search( { username => params->{username} } )->single;
+   my $user = rset('User')->find( { username => params->{username} } );
    if ( !$user ) {
         var login_failed => 1;
         return forward $login_route, { return_url => params->{return_url} }, { method => 'get' };
@@ -87,7 +87,7 @@ sub post_login_route {
     my ($success, $realm) = authenticate_user( params->{username}, params->{password} );
 
     if ($success) {
-        session logged_in_user => params->{username};
+        session logged_in_user => $user->username;
         session logged_in_user_realm => $realm;
         return redirect '/';
     } else {
