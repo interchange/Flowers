@@ -1,0 +1,121 @@
+<div class="row">
+  <div class="span9">
+    <form name="cart" action="/checkout" method="POST">
+    <h1>Shopping Cart</h1>
+    <table class="table table-bordered shopping-cart">
+      <thead>
+        <tr>
+          <th>
+						Description
+						</th>
+          <th width="60">
+						Quantity
+						</th>
+          <th class="td-right" width="120">
+						Price
+						</th>
+          <th class="td-right" width="120">
+						Amount
+						</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="cartitem">
+          <td class="name">Simms replacement laces</td>
+          <td>
+            <input style="width: 45px; font-size: 11px; padding: 3px; height: auto; margin: 0;" type="number" class="qty" value="2" />
+          </td>
+          <td class="td-right price">$24.55</td>
+          <td class="td-right ">$49.10</td>
+        </tr>
+        <tr class="cartitem">
+          <td>Simms replacement laces</td>
+          <td>
+            <input style="width: 45px; font-size: 11px; padding: 3px; height: auto; margin: 0;" type="number" value="2" />
+          </td>
+          <td class="td-right">$24.55</td>
+          <td class="td-right">$49.10</td>
+        </tr>
+        <tr class="cartitem">
+          <td>Simms replacement laces</td>
+          <td>
+            <input style="width: 45px; font-size: 11px; padding: 3px; height: auto; margin: 0;" type="number" value="2" />
+          </td>
+          <td class="td-right">$24.55</td>
+          <td class="td-right">$49.10</td>
+        </tr>
+        <tr class="cartitem">
+          <td>Simms replacement laces</td>
+          <td>
+            <input style="width: 45px; font-size: 11px; padding: 3px; height: auto; margin: 0;" type="number" value="2" />
+          </td>
+          <td class="td-right">$24.55</td>
+          <td class="td-right">$49.10</td>
+        </tr>
+        <tr class="cartitem">
+          <td>Simms replacement laces</td>
+          <td>
+            <input style="width: 45px; font-size: 11px; padding: 3px; height: auto; margin: 0;" type="number" value="2" />
+          </td>
+          <td class="td-right">$24.55</td>
+          <td class="td-right">$49.10</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="background: none;"></td>
+          <td class="td-right">
+            <strong>SUBTOTAL:</strong>
+          </td>
+          <td class="td-right txt-subtotal">
+            <strong class="cart-subtotal">$4,280.60</strong>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="background: none;"></td>
+          <td colspan="2" style="overflow: hidden;">
+            <strong>SHIPPING:</strong>
+            <div style="font-family: Arial; font-size: 11px; color: #888; line-height: 10px; margin-bottom: 5px;">Fill country and ZIP no. to get cost</div>
+            <div class="clear"></div>
+            <div class="align-left" style="margin-right: 5px;">
+              <label>Country</label>
+              <select name="country" class="country" style="height: auto; padding: 2px; width: 120px; font-size: 11px;">
+                <option>United Kingdom</option>
+              </select>
+            </div>
+            <div class="align-left">
+              <label>Zip</label>
+              <input style="height: auto; padding: 3px; width: 60px; font-size: 11px;" type="text" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="align-right">
+      <button class="btn btn-large btn-success">Checkout</button>
+    </div>
+    <div class="align-left" style="padding: 13px 20px 0 0;">
+      <a href="">Continue shopping</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="align-right">
+      <a href="">
+        <img src="/img/btn_paypal.png" />
+      </a>
+    </div>
+    <div class="align-right" style="padding: 7px 8px 0 0;">
+      <a href="">OR</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="alert alert-info cart-alert">Add $34.80 to your order to qualify for <strong>free shipping.</strong></div>
+    <div class="alert alert-success cart-alert">Your order qualifies for <strong>free shipping.</strong></div>
+    <div class="spacer"></div>
+  </div>
+  </form>
+  <div class="span3 rightbar">
+    <div class="rightbar-widget">
+      <div class="alert alert-info alert-quote">
+						I have been patronizing this fly shop for many years and never leave without being totaly impressed by the staff's knowledge and service.
+						<div class="alert-quote-author"><img src="/img/img_profile.png" width="30" /> <strong>Chris, Hancock, NY</strong></div></div>
+    </div>
+    <div class="rightbar-widget"><img src="/img/i_visa.png" /> <img src="/img/i_mastercard.png" /> <img src="/img/i_amex.png" /></div>
+  </div>
+</div>
