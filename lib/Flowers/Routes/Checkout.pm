@@ -204,6 +204,7 @@ sub checkout_tokens {
     $tokens->{days} = \@gift_days;
     $tokens->{months} = \@months;
     $tokens->{years} = \@years;
+    $tokens->{countries} = [shop_country->search({active => 1})];
 
     if ($errors) {
         $tokens->{errors} = $errors;
