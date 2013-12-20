@@ -17,7 +17,7 @@ WriteMakefile(
     PREREQ_PM => {
         'YAML'       => 0,
         'Dancer'     => 1.3080,
-	'Dancer::Session::Storable' => 0,
+	'Dancer::Session::DBIC' => 0,
     'Dancer::Plugin::Database' => 0,
     'Dancer::Plugin::Auth::Extensible' => 0,
     'DBD::mysql' => 0,

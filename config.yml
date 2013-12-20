@@ -34,7 +34,7 @@ engines:
         class: "Flowers::Filters::Image"
 
 # session engine
-session: "YAML"
+session: "DBIC"
 
 # site locale
 locale: sl_SI

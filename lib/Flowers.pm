@@ -15,6 +15,8 @@ use Flowers::Routes::Search;
 
 our $VERSION = '0.0001';
 
+set session_options => {schema => schema};
+
 hook 'before_layout_render' => sub {
 	my $tokens = shift;
     my $action = '';
