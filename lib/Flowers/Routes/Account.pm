@@ -88,6 +88,7 @@ sub post_login_route {
 
     if ($success) {
         session logged_in_user => $user->username;
+        session logged_in_user_id => $user->id;
         session logged_in_user_realm => $realm;
         return redirect '/';
     } else {
