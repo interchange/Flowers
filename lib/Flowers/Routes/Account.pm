@@ -74,35 +74,4 @@ post '/registration' => sub {
 
 };
 
-sub post_login_route {
-   return redirect '/' if logged_in_user;
-
-   my $login_route = '/login';
-
-   my $user = rset('User')->find( { username => params->{username} } );
-   if ( !$user ) {
-        var login_failed => 1;
-        return forward $login_route, { return_url => params->{return_url} }, { method => 'get' };
-  }
-    my ($success, $realm) = authenticate_user( params->{username}, params->{password} );
-
-    if ($success) {
-        session logged_in_user => $user->username;
-        session logged_in_user_id => $user->id;
-        session logged_in_user_realm => $realm;
-        return redirect '/';
-    } else {
-    #something
-}
-};
-
-post '/login' => \&post_login_route;
-
-get '/logout' => sub {
-    template 'login', {layout_noleft => 1,
-        layout_noright => 1};
-    session->destroy;
-    return redirect '/';
-};
-
 1;

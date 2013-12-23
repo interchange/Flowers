@@ -61,6 +61,13 @@ hook 'before_template' => sub {
     $tokens->{main_menu} = [shop_navigation->search({type => 'category'})];
 };
 
+hook 'before_login_display' => sub {
+    my $tokens = shift;
+
+    $tokens->{layout_noleft} = 1;
+    $tokens->{layout_noright} = 1;
+};
+
 get '/' => sub {
     my ($form, $sort, $products);
 
@@ -71,16 +78,6 @@ get '/' => sub {
     $products = product_list(sort  => $sort);
 
     template 'listing', {products => $products, sort => $sort, form => $form};
-};
-
-get '/login/denied' => sub {
-    template 'login_denied', , {layout_noleft => 1,
-        layout_noright => 1};
-};
-
-get '/login' => sub {
-    template 'login', {layout_noleft => 1,
-        layout_noright => 1};
 };
 
 get '/forum' => require_login sub { 
