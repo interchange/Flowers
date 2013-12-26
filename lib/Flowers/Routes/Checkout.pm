@@ -126,7 +126,7 @@ post '/checkout' => sub {
 
         debug("Payment_data: ", \%payment_data);
         
-	    $tx = charge(%payment_data);
+	    $tx = shop_charge(%payment_data);
 
         if ($tx->is_success()) {
             if ($tx->can('popup_url')) {
