@@ -87,7 +87,8 @@ post '/checkout' => sub {
 	# validate form input
 	$validator = new Input::Validator;
 
-	$validator->field('name')->required(1);
+    $validator->field('first_name')->required(1);
+    $validator->field('last_name')->required(1);
 	$validator->field('street_address')->required(1);
 	$validator->field('zip')->required(1);
 	$validator->field('city')->required(1);
