@@ -21,7 +21,7 @@ WriteMakefile(
     'Dancer::Plugin::Database' => 0,
     'Dancer::Plugin::Auth::Extensible' => 0,
     'DBD::mysql' => 0,
-	'Dancer::Plugin::Interchange6' => 0.004,
+	'Dancer::Plugin::Interchange6' => 0.005,
 	'Dancer::Template::TemplateFlute' => 0.0092,
 	'Number::Format' => 0,
 	'DateTime' => 0,
