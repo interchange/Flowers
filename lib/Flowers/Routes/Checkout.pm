@@ -101,10 +101,10 @@ post '/checkout' => sub {
 
 	if ($validator->has_errors) {
 	    $error_ref = $validator->errors;
-	    $error_ref->{zip_city} = $error_ref->{zip} || $error_ref->{city};
 
-	    if (exists $error_ref->{zip}) {
-		$error_ref->{zip_city} = $error_ref->{zip};
+        if (exists $error_ref->{zip}
+            || exists $error_ref->{city}) {
+            $error_ref->{zip_city} = $error_ref->{zip} || $error_ref->{city};
 	    }
 
 	    debug("Errors: ", $error_ref);
