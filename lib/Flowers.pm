@@ -68,6 +68,28 @@ hook 'before_login_display' => sub {
     $tokens->{layout_noright} = 1;
 };
 
+hook 'before_product_display' => sub {
+    my $tokens = shift;
+    my $product = $tokens->{product};
+    my $pa_rs = $product->search_related('ProductAttribute',
+                                         {},
+                                         {join => 'Attribute',
+                                          prefetch => 'Attribute',
+                                         },
+                                        );
+
+    my @attributes;
+
+    while (my $pa = $pa_rs->next) {
+        push @attributes, {name => $pa->Attribute->name,
+                           title => $pa->Attribute->title,
+                           attribute_values => [$pa->search_related('ProductAttributeValue')],
+                          };
+    }
+
+    $tokens->{attributes} = \@attributes;
+};
+
 get '/' => sub {
     my ($form, $sort, $products);
 
