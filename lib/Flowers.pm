@@ -81,9 +81,19 @@ hook 'before_product_display' => sub {
     my @attributes;
 
     while (my $pa = $pa_rs->next) {
+        my $pav_rs = $pa->search_related('ProductAttributeValue',{}, {join => 'AttributeValue', prefetch => 'AttributeValue'});
+
+        my @values;
+
+        while (my $pav = $pav_rs->next) {
+            push @values, {value => $pav->AttributeValue->value,
+                           title => $pav->AttributeValue->title,
+                          };
+        }
+
         push @attributes, {name => $pa->Attribute->name,
                            title => $pa->Attribute->title,
-                           attribute_values => [$pa->search_related('ProductAttributeValue')],
+                           attribute_values => \@values,
                           };
     }
 

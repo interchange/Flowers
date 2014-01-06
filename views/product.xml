@@ -13,6 +13,14 @@
 <param name="price" class="product-options-price" filter="currency"/>
 <param name="sku" class="product-options-sku"/>
 </list>
+<list name="attributes" class="product-attributes-item" iterator="attributes">
+<param name="name" class="product-attributes-name" field="title"/>
+<list name="attribute_values" class="product-attributes-values-item"
+      iterator="attribute_values">
+<param name="value" class="product-attributes-value" field="value" target="value"/>
+<param name="product-attributes-value" field="title"/>
+</list>
+</list>
 <list name="crumb" class="crumb-nav" iterator="product.path">
 <param name="linktext" class="crumb-link" field="name"/>
 <param name="link" class="crumb-link" field="uri" target="href"/>
