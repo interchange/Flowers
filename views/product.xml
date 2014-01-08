@@ -13,7 +13,7 @@
 <param name="price" class="product-options-price" filter="currency"/>
 <param name="sku" class="product-options-sku"/>
 </list>
-<list name="attributes" class="product-attributes-item" iterator="attributes">
+<list name="attributes" class="product-attributes-item" iterator="product.attribute_iterator">
 <param name="name" class="product-attributes-name" field="title"/>
 <list name="attribute_values" class="product-attributes-values-item"
       iterator="attribute_values">
