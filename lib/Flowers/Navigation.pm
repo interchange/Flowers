@@ -3,9 +3,9 @@ package Flowers::Navigation;
 use strict;
 use warnings;
 
-use base 'Nitesi::Object';
+use base 'Nitesi::Navigation';
 
-__PACKAGE__->attributes(qw/code uri name description inactive/);
+#__PACKAGE__->attributes(qw/code uri name description inactive/);
 
 use Dancer ':syntax';
 use Dancer::Plugin::Nitesi;
