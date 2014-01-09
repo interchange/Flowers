@@ -8,6 +8,7 @@ use DateTime;
 use DateTime::Duration;
 use DateTime::Locale;
 use Input::Validator;
+use Business::OnlinePayment;
 use Business::OnlinePayment::IPayment;
 
 use Flowers::Address;
@@ -272,7 +273,7 @@ run time to avoid troubles with forks, conf not loaded yet, etc.
 sub _init_ipayment {
     my $settings = config->{payment_method};
     debug to_dumper($settings);
-    return Business::OnlinePayment::IPayment->new(%$settings);
+    return Business::OnlinePayment->new(IPayment => %$settings);
     # that's it :-)
 }
 
