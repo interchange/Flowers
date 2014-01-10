@@ -5,10 +5,6 @@
 <value name="products.short_description" class="crumb" field="product.short_description"/>
 <value name="product-image" field="sku" filter="image" target="src"/>
 <value name="products.description" field="product.description" class="product-teaser"/>
-<value name="product_classes.manufacturer" class="manufacturer" field="product_class.manufacturer"/>
-<value name="product_classes.name" class="class_name" field="product_class.name"/>
-<value name="product_classes.short_description" class="class_description" field="product_class.short_description"/>
-<value name="products_classes.uri" class="uri" target="href" field="product_class.uri"/>
 <list name="options" class="product-options-item" iterator="options">
 <param name="price" class="product-options-price" filter="currency"/>
 <param name="sku" class="product-options-sku"/>
