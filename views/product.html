@@ -39,6 +39,8 @@
 				<li><strong>Teža:</strong> <span class="weight">0</span>&nbsp;kg.</li>
 			</ul>
 
+            <form action="/cart" method="post">
+
 			<div class="product-attributes">
 
 				<h3>Izberite različico</h3>
@@ -61,7 +63,6 @@
 			<div class="product-options">
 
 				<h3>Izberite različico</h3>
-                                <form action="/cart" method="post">
 
 				<ul class="product-options-list">
 					<li class="product-options-item"><input type="radio" name="sku" value="" class="product-options-sku"/> <span class="product-options-name">6 roses with vase</span> - <span class="product-options-price">26,45 EUR</span></li>
@@ -72,8 +73,9 @@
 
 				<input type="hidden" name="sku" class="sku" value="">
 				<input type="submit" value="Dodaj v košarico" class="btn-cart" />
-                                </form>
+
 			</div>
+          </form>
 
 		</div> <!-- end product-info -->
 
