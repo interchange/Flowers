@@ -22,8 +22,11 @@ my $now = DateTime->now;
 #        { username => 'admin', password => 'admin', email => 'admin@localhost', created => $now } );
 
 get '/registration' => sub {
+    my $form = form('registration');
+
     template 'registration', {layout_noleft => 1,
-        layout_noright => 1};
+        layout_noright => 1,
+        form => $form};
 };
 
 post '/registration' => sub {
