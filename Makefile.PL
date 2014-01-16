@@ -20,6 +20,7 @@ WriteMakefile(
 	'Dancer::Session::DBIC' => 0,
     'Dancer::Plugin::Database' => 0,
     'Dancer::Plugin::Auth::Extensible' => 0,
+    'Dancer::Plugin::Auth::Extensible::Provider::DBIC' => 0,
     'DBD::mysql' => 0,
 	'Dancer::Plugin::Interchange6' => 0.006,
 	'Dancer::Template::TemplateFlute' => 0.0092,
