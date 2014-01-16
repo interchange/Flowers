@@ -4,4 +4,5 @@
 <field name="password"/>
 <field name="verify"/>
 </form>
+<value name="form-errors" field="errors" op="toggle"  />
 </specification>

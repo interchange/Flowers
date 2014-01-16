@@ -9,7 +9,7 @@ logged_in_user authenticate_user user_has_role require_role
 require_login require_any_role
 );
 
-use Input::Validator;
+use Data::Transpose::Validator;
 use DateTime qw();
 use DateTime::Duration qw();
 
@@ -44,19 +44,22 @@ post '/registration' => sub {
         };
 
     # validate form input
-    $validator = new Input::Validator;
+    $validator = Data::Transpose::Validator->new(requireall => 1);
+    $validator->field('email' => "EmailValid");
+    $validator->field('password' => 'PasswordPolicy');
+    $validator->field('password')->username($values->{email});
+    $validator->field('verify' => "String");
+    $validator->group(passwords => ("verify", "password"));
 
-    $validator->field('email')->required(1)->email();
-    $validator->field('password')->required(1);
-    $validator->field('verify')->required(1);
-
-    $validator->validate($values);
-
-    if ($validator->has_errors) {
-    $error_ref = $validator->errors;
-    debug("Register errors: ", $error_ref);
-    $form->errors($error_ref);
-    $form->fill($values);
+    my $clean = $validator->transpose($values);
+    my $error_string;
+    if (!$clean || $validator->errors) {
+        $error_ref = $validator->errors;
+        debug("Register errors: ", $error_ref);
+        $error_string = $validator->packed_errors;
+        $form->errors($error_string);
+        debug to_dumper($error_ref);
+        $form->fill($values);
     }
     else {
     # create account
@@ -71,7 +74,7 @@ post '/registration' => sub {
     }
 
     template 'registration', {form => $form,
-                  errors => $error_ref,
+                  errors => $error_string,
                   layout_noleft => 1,
                   layout_noright => 1};
 
