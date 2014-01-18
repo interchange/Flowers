@@ -17,6 +17,7 @@
       iterator="attribute_values">
 <param name="value" class="product-attributes-value" field="value" target="value"/>
 <param name="product-attributes-value" field="title"/>
+<param name="selected" class="product-attributes-value" target="selected"/>
 </list>
 </list>
 <list name="crumb" class="crumb-nav" iterator="product.path">
