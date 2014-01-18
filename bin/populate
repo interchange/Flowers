@@ -1,0 +1,267 @@
+#! /usr/bin/env perl
+#
+# Copyright 2013 Stefan Hornburg (Racke) <racke@linuxia.de>
+
+use strict;
+use warnings;
+
+use Interchange6::Schema;
+use Interchange6::Schema::Populate::CountryLocale;
+
+use Dancer ':script';
+use Dancer::Plugin::Interchange6;
+
+# prepare records for populating the database
+my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
+
+my $shop_schema = shop_schema;
+
+shop_schema->deploy({add_drop_table => 1});
+
+my @attributes = ({name => 'color', title => 'Color'});
+
+#shop_schema->populate('Attribute', \@attributes);
+
+my @products = (
+    {sku => 'F0001',
+     name => 'One Dozen Roses',
+     short_description => 'What says I love you better than 1 dozen fresh roses?',
+     description => 'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
+     price => '39.95',
+     uri => 'one-dozen-roses',
+     canonical_sku => undef,
+     weight => '4'},
+    {sku => 'F0001-RED',
+     name => 'One Dozen Red Roses',
+     short_description => 'What says I love you better than 1 dozen fresh roses?',
+     description => 'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
+     price => '49.95',
+     uri => 'one-dozen-red-roses',
+     weight => '6',
+     canonical_sku => 'F0001'},
+      {sku => 'F0001-YELLOW',
+     name => 'One Dozen Yellow Roses',
+     short_description => 'What says I love you better than 1 dozen fresh roses?',
+     description => 'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
+     price => '69.95',
+     uri => 'one-dozen-yellow-roses',
+     weight => '6',
+     canonical_sku => 'F0001'},
+    {sku => 'F0001-PINK',
+     name => 'One Dozen Pink Roses',
+     short_description => 'What says I love you better than 1 dozen fresh roses?',
+     description => 'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
+     price => '49.95',
+     uri => 'one-dozen-pink-roses',
+     weight => '4',
+     canonical_sku => 'F0001'},
+    {sku => 'F0002',
+                 name => 'One Dozen Roses & Calla Lily',
+                 short_description => 'What says I love you better than 1 dozen fresh roses with calla lily?',
+                 description => 'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
+                 price => '49.95',
+                 uri => 'one-dozen-red-roses-calla-lilly',
+                 weight => '5'});
+
+
+
+
+$shop_schema->resultset('User')->create({username => 'racke@nite.si',
+                                         email => 'racke@nite.si',
+                                         password => 'nevairbe',
+                                        });
+
+# populate default roles array
+my @roles = (
+['1', 'anonymous', 'Anonymous Users'],
+['2', 'authenticated', 'Authenticated Users'],
+['3', 'user', 'User'],
+['4', 'admin', 'Admin'],
+['5', 'editor', 'Editor']
+);
+
+$shop_schema->resultset('User')->create({username => 'racke@linuxia.de',
+                                         email => 'racke@linuxia.de',
+                                         password => 'nevairbe',
+                                        });
+
+
+# populate addresses
+$shop_schema->populate('Address',
+                       [{users_id => 1,
+                         type => 'shipping',
+                         first_name => 'Test',
+                         last_name => 'Tester',
+                         address => 'Test Road 11',
+                         postal_code => '33333',
+                         city => 'Testhausen',
+                         country_iso_code => 'DE',
+                         phone => '111111',
+                        },
+                        {users_id => 1,
+                         type => 'billing',
+                         first_name => 'Testa',
+                         last_name => 'Testerin',
+                         address => 'Test Ave 11',
+                         postal_code => '44444',
+                         city => 'Test City',
+                         country_iso_code => 'CA',
+                         phone => '111222',
+                        },
+                       ]);
+
+# populate roles table
+$shop_schema->populate('Role', [
+[ 'roles_id', 'name', 'label' ],
+@roles,
+]);
+
+
+my @navigation = (
+['', 'birthday', 'nav', 'menu-main', 'Birthday', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'flowers', 'nav', 'menu-main', 'Flowers', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'plants', 'nav', 'menu-main', 'Plants', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'occasions', 'nav', 'menu-main', 'Occasions', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'sympathy', 'nav', 'menu-main', 'Sympathy', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'gift-baskets', 'nav', 'menu-main', 'Gift Baskets', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'specialty-gifts', 'nav', 'menu-main', 'Specialty Gifts', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'same-day', 'nav', 'menu-main', 'Same Day', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'sale', 'nav', 'menu-main', 'Sale', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'login', 'auth', 'top-login', 'Login', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'registration', 'nav', 'top-right', 'Sign Up', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'forum', 'nav', 'top-left', 'Forum', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'about-us', 'nav', 'top-left', 'About Us', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'shipping', 'nav', 'top-left', 'Shipping', '', '0', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'customer-service', 'nav', 'top-left', 'Customer Service', '', 'customer-service', '0', undef, '0', '0', '0', '0000-00-00 00:00:00'],
+['', 'logout', 'auth', 'top-logout', 'Logout', '', '', '0', undef, '0', '0', '0', '0000-00-00 00:00:00']
+);
+ 
+# populate navigation table
+$shop_schema->populate('Navigation', [
+[ 'navigation_id', 'uri', 'type', 'scope', 'name', 'description', 'template', 'alias', 'parent_id', 'priority', 'product_count', 'active', 'created'],
+@navigation,
+]);
+
+$shop_schema->populate('Product', \@products);
+
+$shop_schema->resultset('NavigationProduct')->create({sku => 'F0001',
+                                                     navigation_id => 5});
+
+$shop_schema->populate('Country', $pop_countries);
+
+# create color attribute
+my $color_data = {name => 'color', title => 'Color', type => 'variant',
+                  AttributeValue =>
+                  [{value => 'black', title => 'Black'},
+                   {value => 'white', title => 'White'},
+                   {value => 'green', title => 'Green'},
+                   {value => 'red', title => 'Red'},
+                   {value => 'yellow', title => 'Yellow'},
+                   {value => 'pink', title => 'Pink'},
+                  ]};
+
+my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
+
+# create size attribute
+my $size_data = {name => 'size', title => 'Size', type => 'variant',
+                  AttributeValue =>
+                  [{value => 'small', title => 'Small'},
+                   {value => 'medium', title => 'Medium'},
+                   {value => 'large', title => 'Large'},
+                              ]};
+
+my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
+
+# create height attribute
+my $height_data = {name => 'height', title => 'Height', type => 'specification',
+                   AttributeValue =>
+                       [{value => '10', title => '10cm'},
+                        {value => '20', title => '20cm'},
+                    ]};
+
+my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
+
+# create product G0001 with variants
+my $product_g = {sku => 'G0001',
+     name => 'Six Tulips',
+     short_description => 'What says I love you better than 1 dozen fresh roses?',
+     description => 'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
+     price => '19.95',
+     uri => 'six-tulips',
+     weight => '4'};
+
+$shop_schema->resultset('Product')->create($product_g)->add_variants(
+    {color => 'yellow', size => 'small', sku => 'G0001-YELLOW-S',
+     name => 'Six Small Yellow Tulips', uri => 'six-small-yellow-tulips'},
+    {color => 'yellow', size => 'large', sku => 'G0001-YELLOW-L',
+     name => 'Six Large Yellow Tulips', uri => 'six-large-yellow-tulips'},
+     {color => 'pink', size => 'small', sku => 'G0001-PINK-S',
+     name => 'Six Small Pink Tulips', uri => 'six-small-pink-tulips'},
+    {color => 'pink', size => 'medium', sku => 'G0001-PINK-M',
+     name => 'Six Medium Pink Tulips', uri => 'six-medium-pink-tulips'},
+    {color => 'pink', size => 'large', sku => 'G0001-PINK-L',
+     name => 'Six Large Pink Tulips', uri => 'six-large-pink-tulips'},
+    );
+
+# assign to product F001
+my $pa_data;
+my %prod_color_att;
+
+my @colors = ('red', 'yellow', 'pink');
+for my $color (@colors) {
+    $pa_data = {attributes_id => $color_att->id,
+                sku => "F0001-" . uc($color),
+            };
+
+    $prod_color_att{$color} = $shop_schema->resultset('ProductAttribute')->create($pa_data);
+};
+
+my %prod_height_att;
+
+my @heights = (10);
+for my $height (@heights) {
+    $pa_data = {attributes_id => $height_att->id,
+                sku => "F0001",
+            };
+
+    $prod_height_att{$height} = $shop_schema->resultset('ProductAttribute')->create($pa_data);
+}
+
+#$pa_data = {attributes_id => $size_att->id,
+#               sku => 'F0001'};
+
+#my $prod_size_att = $shop_schema->resultset('ProductAttribute')->create($pa_dat#a);
+
+# pick three colors out of four
+for my $color (@colors) {
+    my $pav_list = $color_att->search_related('AttributeValue', {value => $color});
+    my $pav;
+
+    if ($pav = $pav_list->next) {
+        my $pav_data = {attribute_values_id => $pav->id,
+                        product_attributes_id => $prod_color_att{$color}->id,
+                        };
+
+        $shop_schema->resultset('ProductAttributeValue')->create($pav_data);
+    }
+    else {
+        warn "Color Attribute $color not found.\n";
+    }
+}
+
+my $pav_list = $height_att->search_related('AttributeValue', {value => 10});
+my $pav_data = {attribute_values_id => $pav_list->next->id,
+                product_attributes_id => $prod_height_att{10}->id,
+            };
+
+$shop_schema->resultset('ProductAttributeValue')->create($pav_data);
+
+my $variant_rs = $shop_schema->resultset('Product')->find('F0001')->search_related('Variant');
+my $variant;
+
+while ($variant = $variant_rs->next) {
+#    warn "Variant ", $variant->sku;
+
+    # find attributes for this variant
+    
+}
