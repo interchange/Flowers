@@ -56,9 +56,16 @@ post '/registration' => sub {
     if (!$clean || $validator->errors) {
         $error_ref = $validator->errors;
         debug("Register errors: ", $error_ref);
+
         $error_string = $validator->packed_errors;
-        $form->errors($error_string);
-        debug to_dumper($error_ref);
+
+        my %form_errors;
+        for my $error_info (@$error_ref) {
+            $form_errors{$error_info->{field}}
+                = $error_info->{errors};
+        }
+
+        my $form_error_ref = $form->errors(\%form_errors);
         $form->fill($values);
     }
     else {
