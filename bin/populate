@@ -87,7 +87,7 @@ $shop_schema->resultset('User')->create({username => 'racke@linuxia.de',
 
 
 # populate addresses
-$shop_schema->populate('Address',
+scalar $shop_schema->populate('Address',
                        [{users_id => 1,
                          type => 'shipping',
                          first_name => 'Test',
@@ -137,7 +137,7 @@ my @navigation = (
 );
  
 # populate navigation table
-$shop_schema->populate('Navigation', [
+scalar $shop_schema->populate('Navigation', [
 [ 'uri', 'type', 'scope', 'name', 'description', 'template', 'alias', 'parent_id', 'priority', 'product_count', 'active'],
 @navigation,
 ]);
