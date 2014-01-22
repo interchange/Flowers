@@ -23,6 +23,7 @@ WriteMakefile(
     'Dancer::Plugin::Auth::Extensible::Provider::DBIC' => 0,
     'DBD::mysql' => 0,
 	'Dancer::Plugin::Interchange6' => 0.006,
+    'Template::Flute' => 0.0096,
 	'Dancer::Template::TemplateFlute' => 0.0092,
 	'Number::Format' => 0,
 	'DateTime' => 0,
