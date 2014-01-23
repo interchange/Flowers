@@ -150,7 +150,7 @@ $shop_schema->resultset('NavigationProduct')->create({sku => 'F0001',
 $shop_schema->populate('Country', $pop_countries);
 
 # create color attribute
-my $color_data = {name => 'color', title => 'Color', type => 'variant',
+my $color_data = {name => 'color', title => 'Color', type => 'variant', priority => 2,
                   AttributeValue =>
                   [{value => 'black', title => 'Black'},
                    {value => 'white', title => 'White'},
@@ -163,7 +163,7 @@ my $color_data = {name => 'color', title => 'Color', type => 'variant',
 my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
 
 # create size attribute
-my $size_data = {name => 'size', title => 'Size', type => 'variant',
+my $size_data = {name => 'size', title => 'Size', type => 'variant', priority => 1,
                   AttributeValue =>
                   [{value => 'small', title => 'Small'},
                    {value => 'medium', title => 'Medium'},
