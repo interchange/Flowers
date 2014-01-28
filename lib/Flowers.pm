@@ -15,6 +15,7 @@ use Flowers::Routes::Search;
 
 our $VERSION = '0.0001';
 
+set session => 'DBIC';
 set session_options => {schema => schema};
 
 hook 'before_layout_render' => sub {
@@ -66,6 +67,19 @@ hook 'before_login_display' => sub {
 
     $tokens->{layout_noleft} = 1;
     $tokens->{layout_noright} = 1;
+};
+
+hook 'before_product_display' => sub {
+    my $tokens = shift;
+    my $product = $tokens->{product};
+
+    debug "Attribute iterator for ", $product->sku, ": ", $product->attribute_iterator;
+};
+
+hook 'before_cart_display' => sub {
+    my $tokens = shift;
+
+    debug "Cart items: ", $tokens->{cart};
 };
 
 get '/' => sub {

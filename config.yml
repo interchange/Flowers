@@ -33,9 +33,6 @@ engines:
       image:
         class: "Flowers::Filters::Image"
 
-# session engine
-session: "DBIC"
-
 # site locale
 locale: sl_SI
 
