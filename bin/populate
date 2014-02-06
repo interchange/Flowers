@@ -182,7 +182,7 @@ my $height_data = {name => 'height', title => 'Height', type => 'variant', prior
 my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
 
 # create product G0001 with variants
-my $product_g = {sku => 'G0001',
+my $product_g_data = {sku => 'G0001',
      name => 'Six Tulips',
      short_description => 'What says I love you better than 1 dozen fresh roses?',
      description => 'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
@@ -190,7 +190,7 @@ my $product_g = {sku => 'G0001',
      uri => 'six-tulips',
      weight => '4'};
 
-$shop_schema->resultset('Product')->create($product_g)->add_variants(
+my $product_g = $shop_schema->resultset('Product')->create($product_g_data)->add_variants(
     {color => 'yellow', size => 'small', sku => 'G0001-YELLOW-S',
      name => 'Six Small Yellow Tulips', uri => 'six-small-yellow-tulips'},
     {color => 'yellow', size => 'large', sku => 'G0001-YELLOW-L',
@@ -229,6 +229,8 @@ $shop_schema->resultset('Product')->create($product_lily)->add_variants(
 
 $shop_schema->resultset('NavigationProduct')->create({sku => 'LILY',
                                                      navigation_id => 2});
+# category "Flowers"
+$product_g->create_related('NavigationProduct', {navigation_id => 2});
 
 # assign to product F001
 my $pa_data;
