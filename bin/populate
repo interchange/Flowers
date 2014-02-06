@@ -165,9 +165,9 @@ my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
 # create size attribute
 my $size_data = {name => 'size', title => 'Size', type => 'variant', priority => 1,
                   AttributeValue =>
-                  [{value => 'small', title => 'Small'},
-                   {value => 'medium', title => 'Medium'},
-                   {value => 'large', title => 'Large'},
+                  [{value => 'small', title => 'Small', priority => 2},
+                   {value => 'medium', title => 'Medium', priority => 1},
+                   {value => 'large', title => 'Large', priority => 0},
                               ]};
 
 my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
