@@ -29,7 +29,7 @@ WriteMakefile(
 	'DateTime' => 0,
 	'DateTime::Locale' => 0,
 	'Input::Validator' => 0,
-    'Data::Transpose' => 0.0005,
+    'Data::Transpose' => 0.0006,
 	'Business::OnlinePayment' => 3.01,
 	'Moo' => 0.009013,
     'DBIx::Class' => 0,
