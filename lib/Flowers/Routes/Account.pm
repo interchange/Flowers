@@ -52,20 +52,11 @@ post '/registration' => sub {
     $validator->group(passwords => ("verify", "password"));
 
     my $clean = $validator->transpose($values);
+    my $errors;
     my $error_string;
+
     if (!$clean || $validator->errors) {
-        $error_ref = $validator->errors;
-        debug("Register errors: ", $error_ref);
-
-        $error_string = $validator->packed_errors;
-
-        my %form_errors;
-        for my $error_info (@$error_ref) {
-            $form_errors{$error_info->{field}}
-                = $error_info->{errors};
-        }
-
-        my $form_error_ref = $form->errors(\%form_errors);
+        $errors = $validator->errors_hash;
         $form->fill($values);
     }
     else {
@@ -81,7 +72,7 @@ post '/registration' => sub {
     }
 
     template 'registration', {form => $form,
-                  errors => $error_string,
+                  errors => $errors,
                   layout_noleft => 1,
                   layout_noright => 1};
 

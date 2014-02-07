@@ -5,4 +5,13 @@
 <field name="verify"/>
 </form>
 <value name="form-errors" field="errors" op="toggle"  />
+<list name="error-email" iterator="errors.email">
+<param name="value" class="email-msg"/>
+</list>
+<list name="error-password" iterator="errors.password">
+<param name="value" class="password-msg"/>
+</list>
+<list name="error-verify" iterator="errors.verify">
+<param name="value" class="verify-msg"/>
+</list>
 </specification>

@@ -1,24 +1,21 @@
 	<div class="main-full">
 
 		<h1>Registracija</h1>
-        <div class="form-errors">
-          Errors
-        </div>
 
 		<form class="frm-default" name="registration" action="/registration" method="POST">
 			<fieldset>
 			<div class="reg-info">Podatke za registracijo boste prejeli po elektronski pošti.</div>
 			<ul>
                 <li>
-					<label>Email Address</label>
+					<label>Email Address</label><span class="form-error" id="error-email"><ul><li class="error-email"><span class="email-msg">Error</span></li></ul></span>
 					<input type="text" name="email"/>
 				</li>
 				<li>
-					<label>Password</label>
+					<label>Password</label><span class="form-error" id="error-password"><ul><li class="error-password"><span class="password-msg">Error</span></li></ul></span>
 					<input type="password" name="password"/>
 				</li>
 				<li>
-					<label>Verify Password</label>
+					<label>Verify Password</label><span class="form-error" id="error-verify"><ul><li class="error-verify"><span class="verify-msg">Error</span></li></ul></span>
 					<input type="password" name="verify" />
 				</li>
 				<li>
