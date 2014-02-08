@@ -1,4 +1,7 @@
 <specification>
+<!-- Total count -->
+<value name="total_count" class="total-count"/>
+
 <list name="products" class="product-box" iterator="products">
 <param name="name" class="product-name"/>
 <param name="price" class="product-price"/>

@@ -92,7 +92,7 @@ get '/' => sub {
     $products = product_list(sort  => $sort);
 
     template 'listing', {products => [$products->all],
-                         count => $products->pager->total_entries,
+                         total_count => $products->pager->total_entries,
                          sort => $sort,
                          form => $form,
                      };
