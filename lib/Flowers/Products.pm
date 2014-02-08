@@ -52,11 +52,13 @@ sub product_list {
         $order = 'priority ASC';
     }
 
-    $set = [shop_product->search({canonical_sku => undef,
-                                  active => 1,
-                              }, {
-                                  order_by => $order,
-    })];
+    $set = shop_product->search({canonical_sku => undef,
+                                 active => 1,
+                             }, {
+                                 page => 1,
+                                 rows => 20,
+                                 order_by => $order,
+                             });
 
     return $set;
 }

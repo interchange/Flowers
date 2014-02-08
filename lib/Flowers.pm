@@ -91,7 +91,11 @@ get '/' => sub {
 
     $products = product_list(sort  => $sort);
 
-    template 'listing', {products => $products, sort => $sort, form => $form};
+    template 'listing', {products => [$products->all],
+                         count => $products->pager->total_entries,
+                         sort => $sort,
+                         form => $form,
+                     };
 };
 
 get '/forum' => require_login sub { 
