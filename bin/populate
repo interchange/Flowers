@@ -142,10 +142,23 @@ scalar $shop_schema->populate('Navigation', [
 @navigation,
 ]);
 
+# create navigation_id hash
+my %nid;
+
+my $nav = $shop_schema->resultset('Navigation')->search(
+    {
+        'scope' => 'menu-main',
+    },
+);
+
+while (my $record = $nav->next) {
+    $nid{$record->name} = $record->navigation_id;
+};
+
 $shop_schema->populate('Product', \@products);
 
 $shop_schema->resultset('NavigationProduct')->create({sku => 'F0001',
-                                                     navigation_id => 5});
+                                                     navigation_id => $nid{Sympathy}});
 
 $shop_schema->populate('Country', $pop_countries);
 
@@ -204,7 +217,7 @@ my $product_g = $shop_schema->resultset('Product')->create($product_g_data)->add
     );
 
 $shop_schema->resultset('NavigationProduct')->create({sku => 'G0001',
-                                                     navigation_id => 2});
+                                                     navigation_id => $nid{Flowers}});
 
 # create product for lily with variants
 my $product_lily = {sku => 'LILY',
@@ -228,9 +241,9 @@ $shop_schema->resultset('Product')->create($product_lily)->add_variants(
 );
 
 $shop_schema->resultset('NavigationProduct')->create({sku => 'LILY',
-                                                     navigation_id => 2});
+                                                     navigation_id => $nid{Flowers}});
 # category "Flowers"
-$product_g->create_related('NavigationProduct', {navigation_id => 2});
+$product_g->create_related('NavigationProduct', {navigation_id => $nid{Birthday}});
 
 # assign to product F001
 my $pa_data;
