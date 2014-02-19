@@ -16,7 +16,11 @@ my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
 
 my $shop_schema = shop_schema;
 
-shop_schema->deploy({add_drop_table => 1});
+shop_schema->deploy({add_drop_table => 1,
+                     producer_args => {
+                         mysql_version => 5,
+                     },
+                 });
 
 my @attributes = ({name => 'color', title => 'Color'});
 
