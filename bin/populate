@@ -159,7 +159,7 @@ while (my $record = $nav->next) {
     $nid{$record->name} = $record->navigation_id;
 };
 
-$shop_schema->populate('Product', \@products);
+scalar $shop_schema->populate('Product', \@products);
 
 $shop_schema->resultset('NavigationProduct')->create({sku => 'F0001',
                                                      navigation_id => $nid{Sympathy}});
