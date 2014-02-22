@@ -137,24 +137,81 @@ post '/checkout' => sub {
 
             debug "Payment successful: ", $tx->authorization;
 
-            my ($addr_form, $addr_values, $addr_ship, $addr_bill, $tx_order);
+            my $users_id = session('logged_in_user_id');
+
+            # create payment order
+            
+            my ($addr_form, $ship_address, $bill_address, $addr_values);
 		
             # create delivery address from gift info form
-            debug("Looking at giftinfo form.");
             $addr_form = form('giftinfo');
             $addr_values = $addr_form->values('session');
-            $addr_values->{country_code} = 'SI';
+            $addr_values->{users_id} = $users_id;
+            $addr_values->{country_iso_code} = delete $addr_values->{country};
+            $addr_values->{address} = delete $addr_values->{street_address};
+            $addr_values->{postal_code} = delete $addr_values->{zip};
             $addr_values->{type} = 'shipping';
+
+            for my $name (qw/time gender message day month time/) {
+                delete $addr_values->{$name};
+            }
+
             debug("Delivery address values: ", $addr_values);
 
-            $addr_ship = Flowers::Address->new(%$addr_values);
-            $addr_ship->save;
+            $ship_address = shop_address->create($addr_values);
 
             # create billing address from payment form
-		
+            $addr_form = form('payment');
+            $addr_values = $addr_form->values;
+            $addr_values->{users_id} = $users_id;
+            $addr_values->{country_iso_code} = 'SI';
+            $addr_values->{address} = delete $addr_values->{street_address};
+            $addr_values->{postal_code} = delete $addr_values->{zip};
+            $addr_values->{type} = 'billing';
+
+            for my $name (qw/gender cc_number cvc_number cc_month cc_year email/) {
+                delete $addr_values->{$name};
+            }
+
+            debug("Billing address values: ", $addr_values);
+
+            $bill_address = shop_address->create($addr_values);
+
+            # order date
+            my $order_date = DateTime->now->iso8601;
+            
+            # create orderlines
+            my @orderlines;
+            my $position = 1;
+            my $cart_items = cart->items;
+
+            for my $item (@$cart_items) {
+                debug "Items: ", $item;
+                my $ol_prod = shop_product($item->{sku});
+                my %orderline_product = (
+                    sku => $ol_prod->sku,
+                    order_position => $position++,
+                    name => $ol_prod->name,
+                    short_description => $ol_prod->short_description,
+                    description => $ol_prod->description,
+                    weight => $ol_prod->weight,
+                    quantity => $item->{quantity},
+                    price => $ol_prod->price,
+                    subtotal => $ol_prod->price * $item->{quantity},
+                );
+
+                push @orderlines, \%orderline_product;
+            }
+
             # create transaction
-            $tx_order = Flowers::Transactions->new();
-            $tx_order->submit;
+            my %order_info = (users_id => session('logged_in_user_id'),
+                              billing_addresses_id => $bill_address->id,
+                              shipping_addresses_id => $ship_address->id,
+                              order_date => $order_date,
+                              order_number => $order_date,
+                              Orderline => \@orderlines);
+
+            shop_order->create(\%order_info);
 
             cart->clear;
 
