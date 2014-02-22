@@ -11,6 +11,8 @@ use Interchange6::Schema::Populate::CountryLocale;
 use Dancer ':script';
 use Dancer::Plugin::Interchange6;
 
+use utf8;
+
 # prepare records for populating the database
 my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
 
@@ -122,6 +124,7 @@ $shop_schema->populate('Role', [
 
 
 my @navigation = (
+['roses', 'nav', 'menu-main', 'Ruža', '', '0', '0', undef, '0', '0', '0'],
 ['birthday', 'nav', 'menu-main', 'Birthday', '', '0', '0', undef, '0', '0', '0'],
 ['flowers', 'nav', 'menu-main', 'Flowers', '', '0', '0', undef, '0', '0', '0'],
 ['plants', 'nav', 'menu-main', 'Plants', '', '0', '0', undef, '0', '0', '0'],
