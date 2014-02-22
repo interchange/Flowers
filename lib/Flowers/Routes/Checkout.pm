@@ -10,7 +10,6 @@ use DateTime::Locale;
 use Input::Validator;
 
 use Flowers::Address;
-use Flowers::Transactions;
 
 hook 'before_cart_display' => sub {
     my $tokens = shift;
