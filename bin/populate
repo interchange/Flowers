@@ -72,10 +72,10 @@ my @products = (
 
 
 
-$shop_schema->resultset('User')->create({username => 'racke@nite.si',
-                                         email => 'racke@nite.si',
-                                         password => 'nevairbe',
-                                        });
+my $user1 = shop_user->create({username => 'racke@nite.si',
+                               email => 'racke@nite.si',
+                               password => 'nevairbe',
+                           });
 
 # populate default roles array
 my @roles = (
@@ -93,28 +93,38 @@ $shop_schema->resultset('User')->create({username => 'racke@linuxia.de',
 
 
 # populate addresses
-scalar $shop_schema->populate('Address',
-                       [{users_id => 1,
-                         type => 'shipping',
-                         first_name => 'Test',
-                         last_name => 'Tester',
-                         address => 'Test Road 11',
-                         postal_code => '33333',
-                         city => 'Testhausen',
-                         country_iso_code => 'DE',
-                         phone => '111111',
-                        },
-                        {users_id => 1,
-                         type => 'billing',
-                         first_name => 'Testa',
-                         last_name => 'Testerin',
-                         address => 'Test Ave 11',
-                         postal_code => '44444',
-                         city => 'Test City',
-                         country_iso_code => 'CA',
-                         phone => '111222',
-                        },
-                       ]);
+my $shipping_address = shop_address->create({
+    users_id => $user1->id,
+    type => 'shipping',
+    first_name => 'Test',
+    last_name => 'Tester',
+    address => 'Test Road 11',
+    postal_code => '33333',
+    city => 'Testhausen',
+    country_iso_code => 'DE',
+    phone => '111111',
+});
+
+my $billing_address = shop_address->create({
+    users_id => $user1->id,
+    type => 'billing',
+    first_name => 'Testa',
+    last_name => 'Testerin',
+    address => 'Test Ave 11',
+    postal_code => '44444',
+    city => 'Test City',
+    country_iso_code => 'CA',
+    phone => '111222',
+});
+
+# add test order
+my %order_data = (order_number => 'RZ20140001',
+                  order_date => '2014-02-27 11:11:11',
+                  users_id => $user1->id,
+                  billing_addresses_id => $billing_address->id,
+                  );
+
+shop_order->create(\%order_data);
 
 # populate roles table
 $shop_schema->populate('Role', [
