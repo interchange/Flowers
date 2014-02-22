@@ -117,14 +117,6 @@ my $billing_address = shop_address->create({
     phone => '111222',
 });
 
-# add test order
-my %order_data = (order_number => 'RZ20140001',
-                  order_date => '2014-02-27 11:11:11',
-                  users_id => $user1->id,
-                  billing_addresses_id => $billing_address->id,
-                  );
-
-shop_order->create(\%order_data);
 
 # populate roles table
 $shop_schema->populate('Role', [
@@ -324,3 +316,43 @@ while ($variant = $variant_rs->next) {
     # find attributes for this variant
     
 }
+
+# add test order
+my @orderlines;
+my $ol_prod = shop_product('F0001-PINK');
+
+push @orderlines, {
+    sku => $ol_prod->sku,
+    order_position => 1,
+    name => $ol_prod->name,
+    short_description => $ol_prod->short_description,
+    description => $ol_prod->description,
+    weight => $ol_prod->weight,
+    quantity => 4,
+    price => $ol_prod->price,
+    subtotal => $ol_prod->price * 4,
+};
+
+$ol_prod = shop_product('F0002');
+
+push @orderlines, {
+    sku => $ol_prod->sku,
+    order_position => 2,
+    name => $ol_prod->name,
+    short_description => $ol_prod->short_description,
+    description => $ol_prod->description,
+    weight => $ol_prod->weight,
+    quantity => 1,
+    price => $ol_prod->price,
+    subtotal => $ol_prod->price,
+};
+
+my %order_data = (order_number => 'RZ20140001',
+                  order_date => '2014-02-27 11:11:11',
+                  users_id => $user1->id,
+                  billing_addresses_id => $billing_address->id,
+                  shipping_addresses_id => $shipping_address->id,
+                  Orderline => \@orderlines,
+                  );
+
+shop_order->create(\%order_data);
