@@ -14,7 +14,7 @@
 <!-- credit card fields -->
 <field name="cc_number"/>
 <field name="cvc_number"/>
-<field name="cc_month" iterator="months"/>
-<field name="cc_year" iterator="years"/>
+<field name="cc_month" iterator="months" keep="empty_value"/>
+<field name="cc_year" iterator="years" keep="empty_value"/>
 </form>
 </specification>
