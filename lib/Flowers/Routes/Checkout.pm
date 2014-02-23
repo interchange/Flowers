@@ -231,6 +231,34 @@ sub checkout_tokens {
 
     $tokens ||= {};
 
+    my %form_values;
+
+    if (session('logged_in_user')) {
+        my ($address_list, $address, $address_type);
+
+        if ($form->name eq 'payment') {
+            $address_type = 'billing';
+        }
+        else {
+            $address_type = 'shipping';
+        }
+
+        $address_list = shop_address->search({users_id => session('logged_in_user_id'), type => $address_type});
+
+        if ($address = $address_list->next) {
+            %form_values = (
+                first_name => $address->first_name,
+                last_name => $address->last_name,
+                street_address => $address->address,
+                zip => $address->postal_code,
+                city => $address->city,
+                country => $address->country_iso_code,
+                phone => $address->phone,
+                email => session('logged_in_user'),
+            );
+        }
+    }
+
     $dtl = DateTime::Locale->load(config->{locale});
     $cur_date = DateTime->now(locale => $dtl);
     $duration = DateTime::Duration->new(days => 1);
@@ -263,6 +291,15 @@ sub checkout_tokens {
     $tokens->{months} = \@months;
     $tokens->{years} = \@years;
     $tokens->{countries} = [shop_country->search({active => 1})];
+
+    if (config->{environment} eq 'development') {
+        $form_values{cc_number} = '4111 1111 1111 1111';
+        $form_values{cvc_number} = '111';
+        $form_values{cc_month} = '12';
+        $form_values{cc_year} = '18';
+    }
+
+    $form->fill(\%form_values);
 
     if ($errors) {
         $tokens->{errors} = $errors;
