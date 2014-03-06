@@ -298,7 +298,8 @@ sub checkout_tokens {
     $tokens->{months} = \@months;
     $tokens->{years} = \@years;
     $tokens->{countries} = [
-        shop_country->search({active => 1},{order_by => 'name'})
+        shop_country->search({active => 1},
+                             {order_by => 'priority DESC, name'})
     ];
 
     if (config->{environment} eq 'development' && $form->name eq 'payment') {
