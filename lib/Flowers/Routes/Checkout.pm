@@ -210,10 +210,10 @@ post '/checkout' => sub {
                 # create orderlines
                 my @orderlines;
                 my $position = 1;
-                my $cart_items = cart->items;
+                my $cart_products = cart->products;
 
-                for my $item (@$cart_items) {
-                    my $ol_prod = shop_product($item->{sku});
+                for my $product (@$cart_products) {
+                    my $ol_prod = shop_product($product->{sku});
                     my %orderline_product = (
                         sku => $ol_prod->sku,
                         order_position => $position++,
@@ -221,9 +221,9 @@ post '/checkout' => sub {
                         short_description => $ol_prod->short_description,
                         description => $ol_prod->description,
                         weight => $ol_prod->weight,
-                        quantity => $item->{quantity},
+                        quantity => $product->{quantity},
                         price => $ol_prod->price,
-                        subtotal => $ol_prod->price * $item->{quantity},
+                        subtotal => $ol_prod->price * $product->{quantity},
                     );
 
                     push @orderlines, \%orderline_product;
@@ -293,7 +293,7 @@ sub checkout_tokens {
     $tokens->{layout_noleft} = 1;
     $tokens->{layout_noright} = 1;
     $tokens->{layout_cartright} = 1;
-    $tokens->{items} = cart->items;
+    $tokens->{products} = cart->products;
     $tokens->{days} = \@gift_days;
     $tokens->{months} = \@months;
     $tokens->{years} = \@years;
