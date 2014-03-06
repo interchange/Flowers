@@ -10,7 +10,7 @@
 <field name="street_address"/>
 <field name="zip"/>
 <field name="city"/>
-<field name="country" iterator="countries" iterator_value_key="country_iso_code" iterator_name_key="name"/>
+<field name="country" iterator="countries" iterator_value_key="country_iso_code" iterator_name_key="name" keep="empty_value"/>
 <field name="message"/>
 <field name="day" iterator="days"/>
 <field name="month" iterator="months"/>
