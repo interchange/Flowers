@@ -297,7 +297,9 @@ sub checkout_tokens {
     $tokens->{days} = \@gift_days;
     $tokens->{months} = \@months;
     $tokens->{years} = \@years;
-    $tokens->{countries} = [shop_country->search({active => 1})];
+    $tokens->{countries} = [
+        shop_country->search({active => 1},{order_by => 'name'})
+    ];
 
     if (config->{environment} eq 'development' && $form->name eq 'payment') {
         $form_values{cc_number} = '4111 1111 1111 1111';
