@@ -173,6 +173,19 @@ post '/checkout' => sub {
                 # create payment order
                 my ($addr_form, $ship_address, $bill_address, $addr_values);
 
+                if (! $users_id) {
+                    # create user
+                    $addr_form = form('payment');
+                    $addr_values = $addr_form->values;
+
+                    my $user = shop_user->create({email => $addr_values->{email},
+                                                  username => $addr_values->{email},
+                                                  first_name => $addr_values->{first_name},
+                                                  last_name => $addr_values->{last_name},
+                                              });
+                    $users_id = $user->id;
+                }
+
                 # create delivery address from gift info form
                 $addr_form = form('giftinfo');
                 $addr_values = $addr_form->values('session');
@@ -233,7 +246,7 @@ post '/checkout' => sub {
                 }
 
                 # create transaction
-                my %order_info = (users_id => session('logged_in_user_id'),
+                my %order_info = (users_id => $users_id,
                                   billing_addresses_id => $bill_address->id,
                                   shipping_addresses_id => $ship_address->id,
                                   subtotal => cart->subtotal,
