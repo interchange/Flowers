@@ -142,7 +142,7 @@ my @navigation = (
 ['registration', 'nav', 'top-right', 'Sign Up', '', '0', '0', undef, '0', '0', '0'],
 ['forum', 'nav', 'top-left', 'Forum', '', '0', '0', undef, '0', '0', '0'],
 ['about-us', 'nav', 'top-left', 'About Us', '', '0', '0', undef, '0', '0', '0'],
-['shipping', 'nav', 'top-left', 'Shipping', '', '0', '0', undef, '0', '0', '0'],
+['orders', 'nav', 'top-left', 'Orders', '', '0', '0', undef, '0', '0', '0'],
 ['customer-service', 'nav', 'top-left', 'Customer Service', '', 'customer-service', '0', undef, '0', '0', '0'],
 ['logout', 'auth', 'top-logout', 'Logout', '', '', '0', undef, '0', '0', '0']
 );
