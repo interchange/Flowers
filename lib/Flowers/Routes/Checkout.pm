@@ -293,7 +293,7 @@ sub checkout_tokens {
     $tokens->{layout_noleft} = 1;
     $tokens->{layout_noright} = 1;
     $tokens->{layout_cartright} = 1;
-    $tokens->{items} = cart->items;
+    $tokens->{cart} = cart->items;
     $tokens->{days} = \@gift_days;
     $tokens->{months} = \@months;
     $tokens->{years} = \@years;
