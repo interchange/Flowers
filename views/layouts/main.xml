@@ -39,6 +39,7 @@
 <param name="sku" class="cart-item-image" target="src" filter="image"/>
 </list>
 <value name="cart-sum" field="total" filter="currency"/>
+<value name="usr"/>
 <form name="coupon" link="name">
 <field name="coupon" class="fld-coupon"/>
 </form>

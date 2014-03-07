@@ -20,7 +20,6 @@ set session_options => {schema => schema};
 
 hook 'before_layout_render' => sub {
 	my $tokens = shift;
-    my $action = '';
 
     # cart total
     $tokens->{total} = cart->total;
@@ -38,20 +37,20 @@ hook 'before_layout_render' => sub {
     };
 
 # fixme login/logout button
-    if (! logged_in_user){
-        $action = 'top-login';
-    } else {
-        $action ='top-logout';
-};
+	my $action = 'top-login';
+	if (logged_in_user){
+    	$action = 'top-logout';
+    	$tokens->{'usr'} = logged_in_user->username;
+	};
 
-   my $auth = schema->resultset('Navigation')->search(
-         {
-          scope => $action,
-         },
-    );
-    while (my $record= $auth->next) {
-         push @{$tokens->{'auth-' . $action}}, $record;
-    };
+	my $auth = schema->resultset('Navigation')->search(
+		{
+			scope => $action,
+		},
+	);
+	while (my $record= $auth->next) {
+		push @{$tokens->{'auth-' . $action}}, $record;
+	};
 };
 
 hook 'before_template' => sub {
