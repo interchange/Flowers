@@ -44,6 +44,9 @@ post '/checkout' => sub {
         }
     }
 
+    # load parameters into form
+    $form->values;
+
     if ($form->pristine) {
         my $ship_adr = shop_address->search(
             {
