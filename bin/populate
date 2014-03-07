@@ -1,12 +1,13 @@
 #! /usr/bin/env perl
 #
-# Copyright 2013 Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2013, 2014 Stefan Hornburg (Racke) <racke@linuxia.de>
 
 use strict;
 use warnings;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
+use Interchange6::Schema::Populate::StateLocale;
 
 use Dancer ':script';
 use Dancer::Plugin::Interchange6;
@@ -15,6 +16,7 @@ use utf8;
 
 # prepare records for populating the database
 my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
+my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
 
 my $shop_schema = shop_schema;
 
@@ -170,6 +172,7 @@ $shop_schema->resultset('NavigationProduct')->create({sku => 'F0001',
                                                      navigation_id => $nid{Sympathy}});
 
 $shop_schema->populate('Country', $pop_countries);
+$shop_schema->populate('State', $pop_states);
 
 # create color attribute
 my $color_data = {name => 'color', title => 'Color', type => 'variant', priority => 2,
