@@ -29,17 +29,17 @@ use Dancer::Plugin::Interchange6;
 use Data::Generate qw{parse};
 use Flowers::Data::DataGen;
 
+use Getopt::Long;
 use Term::ProgressBar;
 
 my @colours = @{Flowers::Data::DataGen::colors()};
 
 my %arg = @ARGV;
-print "Usage:
--p  : define number of products you want to generate, defaults to 100,
--c  : number of diferent colors for each product, value between 1 and ".$#colours.", defaults to random \n";
 
 #asking for argumentas
-my ($no_products, $no_colors) = check_arguments(\%arg); 
+my $no_products = 100; 
+my $no_colors;
+GetOptions ('products=i' => \$no_products, 'colors=i' => \$no_colors);
 
 print "Preparing records for populating countries.\n";
 my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
@@ -137,26 +137,3 @@ while (my $record = $nav->next) {
 		navigation_id => $nid{$record->name}});
 	}
 };
-
-sub check_arguments{
-	my $val = shift;
-	my $products = 100;
-	my $colors;
-	foreach(keys%{$val}){
-		if (! $val->{$_} =~ m/^\d+$/){
-			print "$_ is not an integer falling back to default.";
-		};
-		if ($_ eq '-p'){
-			$products = $val->{$_};
-		}
-
-		if ($_ eq '-c'){
-			if ($val->{$_} < $#colours){
-				$colors = $val->{$_};
-			}else{
-				print "Warning: Too many colors selected, falling back to default.\n";
-			}
-		}
-	}
-  return ($products, $colors);
-}
