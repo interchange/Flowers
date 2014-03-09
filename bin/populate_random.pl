@@ -34,12 +34,14 @@ use Term::ProgressBar;
 
 my @colours = @{Flowers::Data::DataGen::colors()};
 
-my %arg = @ARGV;
-
 #asking for argumentas
 my $no_products = 100; 
 my $no_colors;
-GetOptions ('products=i' => \$no_products, 'colors=i' => \$no_colors);
+GetOptions ('products=i' => \$no_products, 'colors=i' => \$no_colors) 
+or print "Warning: $!
+Usage:
+-p  : define number of products you want to generate, defaults to 100,
+-c  : number of diferent colors for each product, value between 1 and ".$#colours.", defaults to random.\n";
 
 print "Preparing records for populating countries.\n";
 my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
