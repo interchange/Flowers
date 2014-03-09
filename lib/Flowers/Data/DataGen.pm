@@ -59,11 +59,7 @@ sub users{
 
 sub products{
 	my $no_products = shift;
-
-	#generate uniqe sku list
-	my $input_rule = q{VC(10) [A-Z][1-14][a-z][2579]{4}[A-Z][14]{2}};
-	my $skus = parse($input_rule)->get_unique_data($no_products); 
-
+	my $skus = uniqe_varchar($no_products);
 	#generate product parents
 	my @products;
 	for my $sku(@{$skus}){
@@ -213,5 +209,17 @@ sub uniqe_colors{
 		push(@uniqe_colors, $colors[$_]);
 	}
 	return \@uniqe_colors;
+}
+
+sub uniqe_varchar{
+	my $count = shift;
+	#generate uniqe varchar list
+	my $data = parse(q{VC(10) [A-Z][1-14][a-z][2579]{4}[A-Z][14]{2}});
+	my $freedom = $data->get_degrees_of_freedom();
+	if($freedom < $count){
+		die "Max unique value count exceeded. Please set value below $freedom."
+	}
+	my $varchars=$data->get_unique_data($count); 
+	return $varchars;
 }
 1;
