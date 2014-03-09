@@ -64,7 +64,7 @@ sub products{
 	my @products;
 	for my $sku(@{$skus}){
 		my $product;
-		my ($name, $uri,  $short_description, $description) = data();
+		my ($name, $uri,  $short_description, $description) = data($sku);
 		$product = {sku => $sku,
 			name => $name,
 			short_description => $short_description,
@@ -88,12 +88,13 @@ sub variants{
 		my $color = $_;
 		my $sizes = size();
 		for my $size (@{$sizes}){
-			my $size_letter = substr($size->{'title'}, 0, 1);
-			my $variant = {sku => join("-", $product->{'sku'}, $color->{'title'}, $size_letter),
+			my $size_letter = lc(substr($size->{'title'}, 0, 1));
+			my $sku = join("-", $product->{'sku'}, $color->{'title'}, $size_letter);
+			my $variant = {sku => $sku,
 				color => $color->{'value'},
 				size => $size->{'value'}, 
 				name => join(" ", $color->{'title'}, $size->{'title'},  $product->{'name'}),
-				uri => join("-", $color->{'value'}, $size->{'value'},  lc($product->{'name'})),
+				uri => join("-", $product->{'uri'}, $size_letter, lc($color->{'value'})),
 			};
 			push (@variants, $variant);
 		}
@@ -160,18 +161,12 @@ sub height{
 }
 
 sub data{
-	my $child = shift;
+	my $sku = shift;
 	my ($name, $uri, $short_description, $description);
-	my $r_number=(sprintf ("%.4f",rand())*10000);
 	$name = join(" ",$fake->jargon_buzz_word,$fake->jargon_buzz_word,$fake->jargon_buzz_word);
-	$uri = $name;
+	$uri = join("-",$sku,$name);
+	$uri =~ s/ /-/g;
 	$name = ucfirst($name);
-	if ($child){
-		my $colour = $fake->color_name;
-		$name = $name." ".$colour;
-		$uri = $uri."-".lc($colour);
-	}
-	$uri=$uri.$r_number;
 	$short_description = join(" ", $name,  $fake->catch_phase);
 	$description =  join(" ", $name,  $fake->catch_phase, $fake->catch_phase);
 	return($name, $uri, $short_description, $description);
