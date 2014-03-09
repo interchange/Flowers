@@ -29,6 +29,8 @@ use Dancer::Plugin::Interchange6;
 use Data::Generate qw{parse};
 use Flowers::Data::DataGen;
 
+use Term::ProgressBar;
+
 my @colours = @{Flowers::Data::DataGen::colors()};
 
 my %arg = @ARGV;
@@ -106,9 +108,14 @@ my $products = Flowers::Data::DataGen::products($no_products);
 my @products = @{$products};
 
 print "Populating products and generating and populating variants.\n";
+my $progress = Term::ProgressBar->new ({count => $no_products, name => 'Products'});
+my $so_far;
 foreach(@{$products}){
+	$so_far++;
 	my $variants = Flowers::Data::DataGen::variants($_, $no_colors);
 	my $product_g = $shop_schema->resultset('Product')->create($_)->add_variants(@{$variants});
+	
+	$progress->update ($so_far);
 }
 
 print "Populating navigation.\n";
