@@ -61,8 +61,11 @@ sub products{
 	my $no_products = shift;
 	my $skus = uniqe_varchar($no_products);
 	#generate product parents
+	my $progress = Term::ProgressBar->new ({count => $no_products, name => 'Products', ETA   => 'linear'});
+	my $so_far;
 	my @products;
 	for my $sku(@{$skus}){
+		$so_far++;
 		my $product;
 		my ($name, $uri,  $short_description, $description) = data($sku);
 		$product = {sku => $sku,
@@ -75,6 +78,7 @@ sub products{
 			weight => weight()
 		};
 		push (@products, $product);
+		$progress->update ($so_far);
 	}
 	return \@products;
 }
