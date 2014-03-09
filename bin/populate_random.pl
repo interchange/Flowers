@@ -1,6 +1,6 @@
-#!/usr/bin/perl -w
+#! /usr/bin/env perl
 #
-## Copyright (c) 2012, Simun Kodzoman, Tenalt d.o.o.
+## Copyright (c) 2014, Simun Kodzoman (sime-k), Tenalt d.o.o.
 ##
 ## This program is free software: you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -12,7 +12,7 @@
 ## FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
 ## details.
 ##
-## You should have received a copy of the GNU General PuIf you want to load an environment other than the default, try this:blic License along with
+## You should have received a copy of the GNU General Public License want to load an environment other than the default, try this:blic License along with
 ## this program. If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
