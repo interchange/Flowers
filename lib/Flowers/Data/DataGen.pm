@@ -177,12 +177,6 @@ sub weight{
 	return $weight->[0];
 }
 
-sub rand_array{
-	my $no_products = shift;
-	my $rand = parse("INT [0-".($no_products -1)."]")->get_unique_data(rand_int(1,$no_products /3));
-	return  $rand;
-}
-
 sub rand_int{
 	my ($x, $y) = @_;
 	my $rand=int( rand( $y-$x+1 ) ) + $x;
