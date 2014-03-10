@@ -58,25 +58,19 @@ sub users{
 
 
 sub products{
-	my $no_products = shift;
-	my $skus = uniqe_varchar($no_products);
+	my $sku = shift;
 	#generate product parents
-	my @products;
-	for my $sku(@{$skus}){
-		my $product;
-		my ($name, $uri,  $short_description, $description) = data($sku);
-		$product = {sku => $sku,
-			name => $name,
-			short_description => $short_description,
-			description =>  $description,
-			price => price(),
-			uri => $uri,
-			canonical_sku => undef,
-			weight => weight()
-		};
-		push (@products, $product);
-	}
-	return \@products;
+	my ($name, $uri,  $short_description, $description) = data($sku);
+	my $product = {sku => $sku,
+		name => $name,
+		short_description => $short_description,
+		description =>  $description,
+		price => price(),
+		uri => $uri,
+		canonical_sku => undef,
+		weight => weight()
+	};
+	return $product;
 }
 #generate product variants
 sub variants{
