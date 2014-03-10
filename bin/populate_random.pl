@@ -32,8 +32,14 @@ use Flowers::Data::DataGen;
 use Getopt::Long;
 use Term::ProgressBar;
 
-my @colours = @{Flowers::Data::DataGen::colors()};
+my $shop_schema = shop_schema;
 
+shop_schema->deploy({add_drop_table => 1,
+                     producer_args => {
+                         mysql_version => 5,
+                     },
+                 });
+my @colours = @{Flowers::Data::DataGen::colors()};
 #asking for argumentas
 my $no_products = 100; 
 my $no_colors;
@@ -43,98 +49,115 @@ Usage:
 -p  : define number of products you want to generate, defaults to 100,
 -c  : number of diferent colors for each product, value between 1 and ".$#colours.", defaults to random.\n";
 
-print "Preparing records for populating countries.\n";
-my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
+pop_countries();
+pop_states();
+pop_roles();
+pop_users();
+pop_colors();
+pop_size();
+pop_height();
+pop_products();
+pop_navigation();
 
-print "Preparing records for populating states.\n";
-my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
+sub pop_countries{
+	print "Populating countries.\n";
+	my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
+	#populate countries
+	$shop_schema->populate('Country', $pop_countries);
+};
 
-my $shop_schema = shop_schema;
+sub pop_states{
+	print "Populating states.\n";
+	my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
+	#populate states
+	$shop_schema->populate('State', $pop_states);
+};
 
-shop_schema->deploy({add_drop_table => 1,
-                     producer_args => {
-                         mysql_version => 5,
-                     },
-                 });
-
-my @attributes = ({name => 'color', title => 'Color'});
-#populate countries
-print "Populating countries.\n"; 
-$shop_schema->populate('Country', $pop_countries);
-#populate states
-print "Populating states.\n";
-$shop_schema->populate('State', $pop_states);
-
-print "Generating and populating roles.\n";
-# populate roles table
-$shop_schema->populate('Role', [
-[ 'name', 'label' ],
-@{Flowers::Data::DataGen::roles()},
-]);
-
-#ceating and populating user data
-print "Generating and populating user data.\n";
-my $users = Flowers::Data::DataGen::users();
-foreach(@{$users}){
-	my $user = $_->{'user_data'};
-	my $user_obj = shop_user->create($user);
-	foreach(@{$_->{'address_data'}}){
-		$_->{'users_id'} = $user_obj->id; 
-		shop_address->create($_);
-	};
+sub pop_roles{
+	print "Generating and populating roles.\n";
+	# populate roles table
+	$shop_schema->populate('Role', [
+					[ 'name', 'label' ],
+					@{Flowers::Data::DataGen::roles()},
+				]);
+}
+sub pop_users{
+	#ceating and populating user data
+	print "Generating and populating user data.\n";
+	my $users = Flowers::Data::DataGen::users();
+	foreach(@{$users}){
+		my $user = $_->{'user_data'};
+		my $user_obj = shop_user->create($user);
+		foreach(@{$_->{'address_data'}}){
+			$_->{'users_id'} = $user_obj->id; 
+			shop_address->create($_);
+		};
+	}
 }
 
-# create color attribute
-print "Generating and populating atributes.\n";
-my $color_data = {name => 'color', title => 'Color', type => 'variant', priority => 2,
-                  AttributeValue => \@colours};
+sub pop_colors{
+	# create color attribute
+	my @colours = @{Flowers::Data::DataGen::colors()};
+	print "Generating and populating atributes.\n";
+	my $color_data = {name => 'color', title => 'Color', type => 'variant', priority => 2,
+			  AttributeValue => \@colours};
 
-my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
-
-# create size attribute
-my $size_data = {name => 'size', title => 'Size', type => 'variant', priority => 1,
-                  AttributeValue => Flowers::Data::DataGen::size()};
-
-my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
-
-# create height attribute
-my $height_data = {name => 'height', title => 'Height', type => 'variant', priority => 0,
-                   AttributeValue =>Flowers::Data::DataGen::height()};
-
-my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
-
-
-#generating products data
-print "Populating and generating populating products.\n";
-my $progress = Term::ProgressBar->new ({count => $no_products, name => 'Products', ETA   => 'linear'});
-my $so_far;
-my $skus = Flowers::Data::DataGen::uniqe_varchar($no_products);
-my @products;
-foreach(@{$skus}){
-	$so_far++;
-	my $product = Flowers::Data::DataGen::products($_);
-	push (@products, $product);
-	my $variants = Flowers::Data::DataGen::variants($product, $no_colors);
-	my $product_g = $shop_schema->resultset('Product')->create($product)->add_variants(@{$variants});
-	$progress->update ($so_far);
+	my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
 }
 
-print "Populating navigation.\n";
-# populate navigation table
-scalar $shop_schema->populate('Navigation', Flowers::Data::DataGen::navigation());
+sub pop_size{
+	# create size attribute
+	my $size_data = {name => 'size', title => 'Size', type => 'variant', priority => 1,
+			AttributeValue => Flowers::Data::DataGen::size()};
 
-# create navigation_id hash
-my %nid;
+	my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
+}
 
-my $nav = $shop_schema->resultset('Navigation')->search(
-    {
-        'scope' => 'menu-main',
-    },
-);
-while (my $record = $nav->next) {
-    $nid{$record->name} = $record->navigation_id;
-    foreach (@{Flowers::Data::DataGen::rand_array($no_products)}){
-		$shop_schema->resultset('NavigationProduct')->create({sku => $products[$_]->{'sku'},
-		navigation_id => $nid{$record->name}});
+sub pop_height{
+	# create height attribute
+	my $height_data = {name => 'height', title => 'Height', type => 'variant', priority => 0,
+			AttributeValue =>Flowers::Data::DataGen::height()};
+
+	my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
+}
+
+sub pop_products{
+	#generating products data
+	print "Populating and generating populating products.\n";
+	my $progress = Term::ProgressBar->new ({count => $no_products, name => 'Products', ETA   => 'linear'});
+	my $so_far;
+	my $skus = Flowers::Data::DataGen::uniqe_varchar($no_products);
+	my @products;
+	foreach(@{$skus}){
+		$so_far++;
+		my $product = Flowers::Data::DataGen::products($_);
+		my $variants = Flowers::Data::DataGen::variants($product, $no_colors);
+		my $product_g = $shop_schema->resultset('Product')->create($product)->add_variants(@{$variants});
+		push (@products, $product);
+		$progress->update ($so_far);
+	}
+	return \@products;
+}
+
+sub pop_navigation{
+	print "Populating navigation.\n";
+	# populate navigation table
+	scalar $shop_schema->populate('Navigation', Flowers::Data::DataGen::navigation());
+	# create navigation_id hash
+
+	my @nav = $shop_schema->resultset('Navigation')->search(
+	{
+		'scope' => 'menu-main',
+	},
+	)->all;
+	
+	my $products =  $shop_schema->resultset('Product')->search;
+	my $nav_progress = Term::ProgressBar->new ({count => $products ->count, name => 'Navigation', ETA   => 'linear'});
+	my $count;
+	while (my $product = $products->next) {
+		$count++;
+		my $ran = Flowers::Data::DataGen::rand_int(0, $#nav);
+		$shop_schema->resultset('NavigationProduct')->create({sku => $product->sku,navigation_id => $nav[$ran]->navigation_id});
+		$nav_progress->update ($count);
 	}
 };
