@@ -105,17 +105,17 @@ my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
 
 
 #generating products data
-print "Preparing records for populating products.\n";
-my $products = Flowers::Data::DataGen::products($no_products);
-my @products = @{$products};
-
-print "Populating products and generating and populating variants.\n";
+print "Populating and generating populating products.\n";
 my $progress = Term::ProgressBar->new ({count => $no_products, name => 'Products', ETA   => 'linear'});
 my $so_far;
-foreach(@{$products}){
+my $skus = Flowers::Data::DataGen::uniqe_varchar($no_products);
+my @products;
+foreach(@{$skus}){
 	$so_far++;
-	my $variants = Flowers::Data::DataGen::variants($_, $no_colors);
-	my $product_g = $shop_schema->resultset('Product')->create($_)->add_variants(@{$variants});
+	my $product = Flowers::Data::DataGen::products($_);
+	push (@products, $product);
+	my $variants = Flowers::Data::DataGen::variants($product, $no_colors);
+	my $product_g = $shop_schema->resultset('Product')->create($product)->add_variants(@{$variants});
 	$progress->update ($so_far);
 }
 
