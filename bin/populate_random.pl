@@ -26,138 +26,95 @@ use Interchange6::Schema::Populate::StateLocale;
 use Dancer ':script';
 use Dancer::Plugin::Interchange6;
 
-use Data::Generate qw{parse};
 use Flowers::Data::DataGen;
+use Flowers::Data::DataPop;
 
 use Getopt::Long;
 use Term::ProgressBar;
+use Term::UI;
+
+use Tie::IxHash;
 
 my $shop_schema = shop_schema;
 
-shop_schema->deploy({add_drop_table => 1,
-                     producer_args => {
-                         mysql_version => 5,
-                     },
-                 });
+my $term = Term::ReadLine->new('brand');
 my @colours = @{Flowers::Data::DataGen::colors()};
+tie my %actions, "Tie::IxHash"
+    or die 'could not tie %{$actions}';
+%actions = (
+	dbcreate => \&Flowers::Data::DataPop::create_db,
+	countries => \&Flowers::Data::DataPop::pop_countries,
+	users => \&Flowers::Data::DataPop::pop_users,
+	attributes => \&Flowers::Data::DataPop::pop_attributes,
+	products => \&Flowers::Data::DataPop::pop_products,
+	navigaton => \&Flowers::Data::DataPop::pop_navigation
+);
+
 #asking for argumentas
-my $no_products = 100; 
-my $no_colors;
-GetOptions ('products=i' => \$no_products, 'colors=i' => \$no_colors) 
-or print "Warning: $!
-Usage:
--p  : define number of products you want to generate, defaults to 100,
--c  : number of diferent colors for each product, value between 1 and ".$#colours.", defaults to random.\n";
+my $usage = "Usage:
+-g  : create complete database and generate data for all tabels,
+-d  : remove existing database and creates new one,
+-c  : generate data for country and state tabel,
+-u  : generate data for user and roles tabel,
+-a  : generate data for attribute tabel,
+-p  : generate data for products tabel,
+-c  : generate data for navigation tabel.\n";
 
-pop_countries();
-pop_states();
-pop_roles();
-pop_users();
-pop_colors();
-pop_size();
-pop_height();
-pop_products();
-pop_navigation();
+GetOptions (
+	'help'  => \&help,
+	'generate' => \&handler,
+	'dbcreate'=> \&handler, 
+	'countries' => \&handler,
+	'users' => \&handler,
+	'attributes' => \&handler,
+	'products' => \&handler,
+	'navigaton' => \&handler,
+) or print "Warning: $! \n $usage";
 
-sub pop_countries{
-	print "Populating countries.\n";
-	my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
-	#populate countries
-	$shop_schema->populate('Country', $pop_countries);
-};
-
-sub pop_states{
-	print "Populating states.\n";
-	my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
-	#populate states
-	$shop_schema->populate('State', $pop_states);
-};
-
-sub pop_roles{
-	print "Generating and populating roles.\n";
-	# populate roles table
-	$shop_schema->populate('Role', [
-					[ 'name', 'label' ],
-					@{Flowers::Data::DataGen::roles()},
-				]);
+my ($no_colors, $no_products);
+sub help {
+	print $usage;
 }
-sub pop_users{
-	#ceating and populating user data
-	print "Generating and populating user data.\n";
-	my $users = Flowers::Data::DataGen::users();
-	foreach(@{$users}){
-		my $user = $_->{'user_data'};
-		my $user_obj = shop_user->create($user);
-		foreach(@{$_->{'address_data'}}){
-			$_->{'users_id'} = $user_obj->id; 
-			shop_address->create($_);
+
+sub handler {
+	my ($opt_name, $opt_value) = @_;
+	if($opt_name eq 'generate'){
+		foreach(keys %actions){
+			interface($_);
+			print "Populating $_.\n";
 		};
+		exit 0;
+	}else{
+		print "Populating $opt_name.\n";
+		interface($opt_name);
 	}
 }
 
-sub pop_colors{
-	# create color attribute
-	my @colours = @{Flowers::Data::DataGen::colors()};
-	print "Generating and populating atributes.\n";
-	my $color_data = {name => 'color', title => 'Color', type => 'variant', priority => 2,
-			  AttributeValue => \@colours};
-
-	my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
-}
-
-sub pop_size{
-	# create size attribute
-	my $size_data = {name => 'size', title => 'Size', type => 'variant', priority => 1,
-			AttributeValue => Flowers::Data::DataGen::size()};
-
-	my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
-}
-
-sub pop_height{
-	# create height attribute
-	my $height_data = {name => 'height', title => 'Height', type => 'variant', priority => 0,
-			AttributeValue =>Flowers::Data::DataGen::height()};
-
-	my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
-}
-
-sub pop_products{
-	#generating products data
-	print "Populating and generating populating products.\n";
-	my $progress = Term::ProgressBar->new ({count => $no_products, name => 'Products', ETA   => 'linear'});
-	my $so_far;
-	my $skus = Flowers::Data::DataGen::uniqe_varchar($no_products);
-	my @products;
-	foreach(@{$skus}){
-		$so_far++;
-		my $product = Flowers::Data::DataGen::products($_);
-		my $variants = Flowers::Data::DataGen::variants($product, $no_colors);
-		my $product_g = $shop_schema->resultset('Product')->create($product)->add_variants(@{$variants});
-		push (@products, $product);
-		$progress->update ($so_far);
-	}
-	return \@products;
-}
-
-sub pop_navigation{
-	print "Populating navigation.\n";
-	# populate navigation table
-	scalar $shop_schema->populate('Navigation', Flowers::Data::DataGen::navigation());
-	# create navigation_id hash
-
-	my @nav = $shop_schema->resultset('Navigation')->search(
-	{
-		'scope' => 'menu-main',
-	},
-	)->all;
+sub interface{
+	my $action = shift;
 	
-	my $products =  $shop_schema->resultset('Product')->search;
-	my $nav_progress = Term::ProgressBar->new ({count => $products ->count, name => 'Navigation', ETA   => 'linear'});
-	my $count;
-	while (my $product = $products->next) {
-		$count++;
-		my $ran = Flowers::Data::DataGen::rand_int(0, $#nav);
-		$shop_schema->resultset('NavigationProduct')->create({sku => $product->sku,navigation_id => $nav[$ran]->navigation_id});
-		$nav_progress->update ($count);
-	}
-};
+	if($action eq 'dbcreate'){
+		my $bool = $term->ask_yn(
+			prompt => "This option will delete all records and recreate your DB.\n Are you sure?",
+			default => 'y',
+			);
+		if($bool){
+			$actions{$action}->();
+		};
+	}elsif($action eq 'products'){
+		$no_products = $term->get_reply(
+			prompt  => 'What is the number of products you want to generate?',
+			default => '100' );
+		$no_colors = $term->get_reply(
+			prompt  => 'What is the number of colors for each product you want to generate?',
+			default => '5' );
+		print "Generating ".(($no_products*$no_colors*3)+$no_products)." records.\n";
+		$actions{$action}->($no_products, $no_colors);
+	}else{
+		$actions{$action}->();
+	};
+}
+
+
+
+1;
