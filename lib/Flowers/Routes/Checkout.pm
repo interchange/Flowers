@@ -255,14 +255,17 @@ post '/checkout' => sub {
                                   order_number => $order_date,
                                   Orderline => \@orderlines);
 
-                shop_order->create(\%order_info);
+                my $order = shop_order->create(\%order_info);
 
                 cart->clear;
 
-                my $output = template 'checkout-thanks', checkout_tokens($form);
+                # update payment info
+                $tx->payment_order->update({orders_id => $order->id});
 
                 form('giftinfo')->reset;
                 form('payment')->reset;
+
+                my $output = template 'checkout-thanks', checkout_tokens($form);
 
                 return $output;
             }
