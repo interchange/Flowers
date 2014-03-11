@@ -3,7 +3,12 @@ package Flowers::Data::DataGen;
 use strict;
 use warnings;
 
+use Interchange6::Schema;
+use Interchange6::Schema::Populate::CountryLocale;
+use Interchange6::Schema::Populate::StateLocale;
+
 use Dancer ':script';
+use Dancer::Plugin::Interchange6;
 
 #Random data generators
 use Faker;
@@ -12,6 +17,7 @@ use Data::Generate qw{parse};
 use utf8;
 
 my $fake = Faker::Factory->new(locale => 'en_US')->create;
+my $shop_schema = shop_schema;
 
 sub roles{
 	my $roles = [
@@ -77,18 +83,18 @@ sub variants{
 	my ($product, $no_colors) = @_;
 	my $max_children_no = $no_colors || rand_int(0, $#{colors()}-1);
 	my @variants;
-	my $colors = uniqe_colors($max_children_no);
+	my $colors = unique_colors($max_children_no);
 	foreach (@{$colors}){
 		my $color = $_;
 		my $sizes = size();
 		for my $size (@{$sizes}){
 			my $size_letter = lc(substr($size->{'title'}, 0, 1));
-			my $sku = join("-", $product->{'sku'}, $color->{'title'}, $size_letter);
+			my $sku = join("-", $product->{'sku'}, $color->title, $size_letter);
 			my $variant = {sku => $sku,
-				color => $color->{'value'},
+				color => $color->value,
 				size => $size->{'value'}, 
-				name => join(" ", $color->{'title'}, $size->{'title'},  $product->{'name'}),
-				uri => join("-", $product->{'uri'}, $size_letter, lc($color->{'value'})),
+				name => join(" ", $color->title, $size->{'title'},  $product->{'name'}),
+				uri => join("-", $product->{'uri'}, $size_letter, $color->value),
 			};
 			push (@variants, $variant);
 		}
@@ -133,6 +139,7 @@ sub colors{
 		$color ->{'value'}= lc($_);
 		push(@colors, $color);
 	}
+	@colors = sort { $a->{'value'} cmp $b->{'value'} } @colors;
 	return \@colors;
 }
 
@@ -177,27 +184,27 @@ sub weight{
 	return $weight->[0];
 }
 
-sub rand_array{
-	my $no_products = shift;
-	my $rand = parse("INT [0-".($no_products -1)."]")->get_unique_data(rand_int(1,$no_products /3));
-	return  $rand;
-}
-
 sub rand_int{
 	my ($x, $y) = @_;
 	my $rand=int( rand( $y-$x+1 ) ) + $x;
 	return $rand;
 };
 
-sub uniqe_colors{
+sub unique_colors{
 	my $array_size = shift;
-	my @colors = @{colors()};
+	my @colors = $shop_schema->resultset('Attribute')->search(
+	{
+		'name' => 'color',
+	},
+	)->search_related('AttributeValue');
+	
 	my $rand = parse("INT [0-".($#colors-1)."]")->get_unique_data($array_size);
-	my @uniqe_colors;
+	my @unique_colors;
 	foreach (@{$rand}){
-		push(@uniqe_colors, $colors[$_]);
+		push(@unique_colors, $colors[$_]);
 	}
-	return \@uniqe_colors;
+	@unique_colors = sort { $a->value cmp $b->value } @unique_colors;
+	return \@unique_colors;
 }
 
 sub uniqe_varchar{

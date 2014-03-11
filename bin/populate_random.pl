@@ -26,115 +26,95 @@ use Interchange6::Schema::Populate::StateLocale;
 use Dancer ':script';
 use Dancer::Plugin::Interchange6;
 
-use Data::Generate qw{parse};
 use Flowers::Data::DataGen;
+use Flowers::Data::DataPop;
 
 use Getopt::Long;
 use Term::ProgressBar;
+use Term::UI;
 
-my @colours = @{Flowers::Data::DataGen::colors()};
-
-#asking for argumentas
-my $no_products = 100; 
-my $no_colors;
-GetOptions ('products=i' => \$no_products, 'colors=i' => \$no_colors) 
-or print "Warning: $!
-Usage:
--p  : define number of products you want to generate, defaults to 100,
--c  : number of diferent colors for each product, value between 1 and ".$#colours.", defaults to random.\n";
-
-print "Preparing records for populating countries.\n";
-my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
-
-print "Preparing records for populating states.\n";
-my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
+use Tie::IxHash;
 
 my $shop_schema = shop_schema;
 
-shop_schema->deploy({add_drop_table => 1,
-                     producer_args => {
-                         mysql_version => 5,
-                     },
-                 });
+my $term = Term::ReadLine->new('brand');
+my @colours = @{Flowers::Data::DataGen::colors()};
+tie my %actions, "Tie::IxHash"
+    or die 'could not tie %{$actions}';
+%actions = (
+	dbcreate => \&Flowers::Data::DataPop::create_db,
+	countries => \&Flowers::Data::DataPop::pop_countries,
+	users => \&Flowers::Data::DataPop::pop_users,
+	attributes => \&Flowers::Data::DataPop::pop_attributes,
+	products => \&Flowers::Data::DataPop::pop_products,
+	navigaton => \&Flowers::Data::DataPop::pop_navigation
+);
 
-my @attributes = ({name => 'color', title => 'Color'});
-#populate countries
-print "Populating countries.\n"; 
-$shop_schema->populate('Country', $pop_countries);
-#populate states
-print "Populating states.\n";
-$shop_schema->populate('State', $pop_states);
+#asking for argumentas
+my $usage = "Usage:
+-g  : create complete database and generate data for all tabels,
+-d  : remove existing database and creates new one,
+-c  : generate data for country and state tabel,
+-u  : generate data for user and roles tabel,
+-a  : generate data for attribute tabel,
+-p  : generate data for products tabel,
+-c  : generate data for navigation tabel.\n";
 
-print "Generating and populating roles.\n";
-# populate roles table
-$shop_schema->populate('Role', [
-[ 'name', 'label' ],
-@{Flowers::Data::DataGen::roles()},
-]);
+GetOptions (
+	'help'  => \&help,
+	'generate' => \&handler,
+	'dbcreate'=> \&handler, 
+	'countries' => \&handler,
+	'users' => \&handler,
+	'attributes' => \&handler,
+	'products' => \&handler,
+	'navigaton' => \&handler,
+) or print "Warning: $! \n $usage";
 
-#ceating and populating user data
-print "Generating and populating user data.\n";
-my $users = Flowers::Data::DataGen::users();
-foreach(@{$users}){
-	my $user = $_->{'user_data'};
-	my $user_obj = shop_user->create($user);
-	foreach(@{$_->{'address_data'}}){
-		$_->{'users_id'} = $user_obj->id; 
-		shop_address->create($_);
+my ($no_colors, $no_products);
+sub help {
+	print $usage;
+}
+
+sub handler {
+	my ($opt_name, $opt_value) = @_;
+	if($opt_name eq 'generate'){
+		foreach(keys %actions){
+			interface($_);
+			print "Populating $_.\n";
+		};
+		exit 0;
+	}else{
+		print "Populating $opt_name.\n";
+		interface($opt_name);
+	}
+}
+
+sub interface{
+	my $action = shift;
+	
+	if($action eq 'dbcreate'){
+		my $bool = $term->ask_yn(
+			prompt => "This option will delete all records and recreate your DB.\n Are you sure?",
+			default => 'y',
+			);
+		if($bool){
+			$actions{$action}->();
+		};
+	}elsif($action eq 'products'){
+		$no_products = $term->get_reply(
+			prompt  => 'What is the number of products you want to generate?',
+			default => '100' );
+		$no_colors = $term->get_reply(
+			prompt  => 'What is the number of colors for each product you want to generate?',
+			default => '5' );
+		print "Generating ".(($no_products*$no_colors*3)+$no_products)." records.\n";
+		$actions{$action}->($no_products, $no_colors);
+	}else{
+		$actions{$action}->();
 	};
 }
 
-# create color attribute
-print "Generating and populating atributes.\n";
-my $color_data = {name => 'color', title => 'Color', type => 'variant', priority => 2,
-                  AttributeValue => \@colours};
-
-my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
-
-# create size attribute
-my $size_data = {name => 'size', title => 'Size', type => 'variant', priority => 1,
-                  AttributeValue => Flowers::Data::DataGen::size()};
-
-my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
-
-# create height attribute
-my $height_data = {name => 'height', title => 'Height', type => 'variant', priority => 0,
-                   AttributeValue =>Flowers::Data::DataGen::height()};
-
-my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
 
 
-#generating products data
-print "Populating and generating populating products.\n";
-my $progress = Term::ProgressBar->new ({count => $no_products, name => 'Products', ETA   => 'linear'});
-my $so_far;
-my $skus = Flowers::Data::DataGen::uniqe_varchar($no_products);
-my @products;
-foreach(@{$skus}){
-	$so_far++;
-	my $product = Flowers::Data::DataGen::products($_);
-	push (@products, $product);
-	my $variants = Flowers::Data::DataGen::variants($product, $no_colors);
-	my $product_g = $shop_schema->resultset('Product')->create($product)->add_variants(@{$variants});
-	$progress->update ($so_far);
-}
-
-print "Populating navigation.\n";
-# populate navigation table
-scalar $shop_schema->populate('Navigation', Flowers::Data::DataGen::navigation());
-
-# create navigation_id hash
-my %nid;
-
-my $nav = $shop_schema->resultset('Navigation')->search(
-    {
-        'scope' => 'menu-main',
-    },
-);
-while (my $record = $nav->next) {
-    $nid{$record->name} = $record->navigation_id;
-    foreach (@{Flowers::Data::DataGen::rand_array($no_products)}){
-		$shop_schema->resultset('NavigationProduct')->create({sku => $products[$_]->{'sku'},
-		navigation_id => $nid{$record->name}});
-	}
-};
+1;
