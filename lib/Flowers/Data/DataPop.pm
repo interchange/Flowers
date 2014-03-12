@@ -40,6 +40,7 @@ sub pop_countries{
 };
 
 sub pop_users{
+	my $no_users = shift; 
 	# populate roles table
 	$shop_schema->resultset('Role')->delete;
 	$shop_schema->populate('Role', [
@@ -48,11 +49,10 @@ sub pop_users{
 				]);
 	#ceating and populating user data
 	$shop_schema->resultset('User')->delete;
-	my $users = Flowers::Data::DataGen::users();
-	foreach(@{$users}){
-		my $user = $_->{'user_data'};
-		my $user_obj = shop_user->create($user);
-		foreach(@{$_->{'address_data'}}){
+	for(0...$no_users){
+		my $user = Flowers::Data::DataGen::users();
+		my $user_obj = shop_user->create($user->{'user_data'});
+		foreach(@{$user->{'address_data'}}){
 			$_->{'users_id'} = $user_obj->id; 
 			shop_address->create($_);
 		};
@@ -133,12 +133,16 @@ sub pop_orders{
 	my $no_orders = shift;
 	$shop_schema->resultset('Order')->delete_all;
 	my @users= $shop_schema->resultset('User')->search()->all;
+	my $nav_progress = Term::ProgressBar->new ({count => $#users+1, name => 'Orders', ETA   => 'linear'});
+	my $counter;
 	foreach(@users){
+		$counter++;
 		my $count = 0;
 		while($count < $no_orders){
 			$count++;
 			Flowers::Data::DataGen::orders($_->id);
 		}
+		$nav_progress->update ($counter);
 	}
 };
 1;
