@@ -128,4 +128,17 @@ sub pop_navigation{
 		$nav_progress->update ($count);
 	}
 };
+
+sub pop_orders{
+	my $no_orders = shift;
+	$shop_schema->resultset('Order')->delete_all;
+	my @users= $shop_schema->resultset('User')->search()->all;
+	foreach(@users){
+		my $count = 0;
+		while($count < $no_orders){
+			$count++;
+			Flowers::Data::DataGen::orders($_->id);
+		}
+	}
+};
 1;
