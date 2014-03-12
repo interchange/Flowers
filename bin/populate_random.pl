@@ -58,7 +58,7 @@ my $usage = "Usage:
 -u  : generate data for user and roles tabel,
 -a  : generate data for attribute tabel,
 -p  : generate data for products tabel,
--c  : generate data for navigation tabel.\n";
+-n  : generate data for navigation tabel.\n";
 
 GetOptions (
 	'help'  => \&help,
