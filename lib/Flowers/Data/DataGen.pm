@@ -151,6 +151,68 @@ sub size{
 	return $size;
 }
 
+sub orders{
+	my $userid = shift;
+	my $rand_int = rand_int(3, 20);
+	my $shipping_address = shop_address->search({
+		'users_id' => $userid,
+		'type' => 'shipping',
+	})->first;
+		
+	my $billing_address = shop_address->search({
+		'users_id' => $userid,
+		'type' => 'billing',
+	})->first;
+	
+	unless( $shipping_address && $billing_address){
+		return 1;
+	}; 
+	
+	my @product =  $shop_schema->resultset('Product')->search(
+	{
+		'canonical_sku' => undef,
+	},
+	{limit =>$rand_int,
+	order_by=> \'RAND()'}
+	)->all;
+	
+	my (@orderlines, $weight, $subtotal);
+	foreach(1...$rand_int){
+		my $rand = rand_int(3, 20);
+		push @orderlines, {
+			sku => $product[$_]->sku,
+			order_position => $_,
+			name => $product[$_]->name,
+			short_description => $product[$_]->short_description,
+			description => $product[$_]->description,
+			weight => $product[$_]->weight,
+			quantity => $rand,
+			price => $product[$_]->price,
+			subtotal => $product[$_]->price * $rand,
+		};
+		$weight += $product[$_]->weight;
+		$subtotal += $product[$_]->price * $rand;
+		
+	}
+	
+	my $date = $fake->date_this_year;
+	$date =~ s/T/ /g;
+	my $order_data = shop_order->create({
+                order_date => $date,
+                users_id => $userid,
+                billing_addresses_id => $billing_address->id,
+                shipping_addresses_id => $shipping_address->id,
+		weight => $weight,
+		subtotal => $subtotal,
+                Orderline => \@orderlines,
+	});
+	
+	$date =~ s/\D//g;
+	$order_data->update({
+			order_number => 'UID'.$userid.$date.'OID'.$order_data->orders_id,
+		});
+}
+
 sub height{
 	my $height = [{value => '10', title => '10cm'},
 			{value => '20', title => '20cm'},

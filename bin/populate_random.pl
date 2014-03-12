@@ -47,7 +47,8 @@ tie my %actions, "Tie::IxHash"
 	users => \&Flowers::Data::DataPop::pop_users,
 	attributes => \&Flowers::Data::DataPop::pop_attributes,
 	products => \&Flowers::Data::DataPop::pop_products,
-	navigaton => \&Flowers::Data::DataPop::pop_navigation
+	navigaton => \&Flowers::Data::DataPop::pop_navigation,
+	orders => \&Flowers::Data::DataPop::pop_orders
 );
 
 #asking for argumentas
@@ -58,7 +59,8 @@ my $usage = "Usage:
 -u  : generate data for user and roles tabel,
 -a  : generate data for attribute tabel,
 -p  : generate data for products tabel,
--n  : generate data for navigation tabel.\n";
+-n  : generate data for navigation tabel,
+-o  : generate data for orders tabel.\n";
 
 GetOptions (
 	'help'  => \&help,
@@ -69,9 +71,10 @@ GetOptions (
 	'attributes' => \&handler,
 	'products' => \&handler,
 	'navigaton' => \&handler,
+	'orders' => \&handler,
 ) or print "Warning: $! \n $usage";
 
-my ($no_colors, $no_products);
+my ($no_colors, $no_products, $no_orders);
 sub help {
 	print $usage;
 }
@@ -110,6 +113,12 @@ sub interface{
 			default => '5' );
 		print "Generating ".(($no_products*$no_colors*3)+$no_products)." records.\n";
 		$actions{$action}->($no_products, $no_colors);
+	}elsif($action eq 'orders'){
+		$no_orders = $term->get_reply(
+			prompt  => 'What is the number of orders for each user you want to generate?',
+			default => '5' );
+		print "Generating orders.\n";
+		$actions{$action}->($no_orders);
 	}else{
 		$actions{$action}->();
 	};
