@@ -6,6 +6,10 @@ use warnings;
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
 use Interchange6::Schema::Populate::StateLocale;
+use parent 'DBIx::Class::ResultSet';
+ 
+__PACKAGE__->load_components('Helper::ResultSet::Random');
+
 
 use Dancer ':script';
 use Dancer::Plugin::Interchange6;
@@ -31,34 +35,41 @@ sub roles{
 }
 
 sub users{
-	my $users = [{user_data =>{username => 'racke@linuxia.de',
-				email => 'racke@linuxia.de',
-				password => 'nevairbe',
+	my $name = $fake->first_name;
+	my $lastname = $fake->last_name;
+	my $domain = $fake->email_domain;
+	my $password = parse(q{VC(10) [A-Z][1-14].[a-z][2579]{4}[A-Z][14]{2}})->get_unique_data(1);
+	my $countries =  $shop_schema->resultset('Country')->search;
+	my $rand =rand_int(0, $countries->count);
+	my ($country, $count);
+	while ($country = $countries->next) {
+		$count++;
+		last if($count == $rand);
+	}
+	my $users = [{user_data =>{username => lc($name)."@".$domain,
+				email => lc($name)."@".$domain,
+				password => $password,
 				},
 				address_data =>[{type => 'shipping',
-							first_name => 'Test',
-							last_name => 'Tester',
-							address => 'Test Road 11',
-							postal_code => '33333',
-							city => 'Testhausen',
-							country_iso_code => 'DE',
-							phone => '111111',
+							first_name => $name,
+							last_name => $lastname,
+							address =>  $fake->street_address,
+							postal_code => $fake->postal_code,
+							city => $fake->city,
+							country_iso_code => $country->country_iso_code,
+							phone => $fake->phone_number,
 							},
 							{type => 'billing',
-							first_name => 'Testa',
-							last_name => 'Testerin',
-							address => 'Test Ave 11',
-							postal_code => '44444',
-							city => 'Test City',
-							country_iso_code => 'CA',
-							phone => '111222',
+							first_name => $fake->first_name,
+							last_name => $fake->last_name,
+							address =>  $fake->street_address,
+							postal_code => $fake->postal_code,
+							city => $fake->city,
+							country_iso_code => $country->country_iso_code,
+							phone => $fake->phone_number,
 							}
-						]},
-				{user_data =>{username => 'racke@nite.si',
-				email => 'racke@nite.si',
-				password => 'nevairbe',
-				}	
-			}];
+						]
+				}];
 	return $users; 
 };
 
@@ -166,40 +177,35 @@ sub orders{
 	unless( $shipping_address && $billing_address){
 		return 1;
 	}; 
-	my $count =  $shop_schema->resultset('Product')->search(
-	{
-		'canonical_sku' => undef,
-	})->count;
 
-	my $rand_int = rand_int(1, $count-1);
-	
-	my @product =  $shop_schema->resultset('Product')->search(
-	{
+	my $products =  $shop_schema->resultset('Product')->search({
 		'canonical_sku' => undef,
-	},
-	{limit =>$rand_int,
-	order_by=> \'RAND()'}
-	)->all;
+	});
 	
-	my (@orderlines, $weight, $subtotal);
-	foreach(1...$rand_int){
-		my $rand = rand_int(3, 20);
-		push @orderlines, {
-			sku => $product[$_]->sku,
-			order_position => $_,
-			name => $product[$_]->name,
-			short_description => $product[$_]->short_description,
-			description => $product[$_]->description,
-			weight => $product[$_]->weight,
-			quantity => $rand,
-			price => $product[$_]->price,
-			subtotal => $product[$_]->price * $rand,
-		};
-		$weight += $product[$_]->weight;
-		$subtotal += $product[$_]->price * $rand;
-		
+	my (@orderlines, $count);
+	my ($weight, $subtotal);
+	while (my $product = $products->next){
+		my $rand_int = rand_int(1, $products->count-1);
+		$count++;
+		if($count == $rand_int ){
+			my $rand = rand_int(3, 20);
+			$weight = $product->weight;
+			$subtotal = $product->price * $rand;
+			push @orderlines, {
+				sku => $product->sku,
+				order_position => $_,
+				name => $product->name,
+				short_description => $product->short_description,
+				description => $product->description,
+				weight => $product->weight,
+				quantity => $rand,
+				price => $product->price,
+				subtotal => $subtotal,
+			};
+		}
+		$subtotal += $subtotal || 0;
+		$weight += $weight || 0;
 	}
-	
 	my $date = $fake->date_this_year;
 	$date =~ s/T/ /g;
 	my $order_data = shop_order->create({
