@@ -46,7 +46,7 @@ sub users{
 		$count++;
 		last if($count == $rand);
 	}
-	my $users = [{user_data =>{username => lc($name)."@".$domain,
+	my $user = {user_data =>{username => lc($name)."@".$domain,
 				email => lc($name)."@".$domain,
 				password => $password,
 				},
@@ -69,8 +69,8 @@ sub users{
 							phone => $fake->phone_number,
 							}
 						]
-				}];
-	return $users; 
+				};
+	return $user; 
 };
 
 

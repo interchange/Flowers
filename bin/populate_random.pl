@@ -74,7 +74,7 @@ GetOptions (
 	'orders' => \&handler,
 ) or print "Warning: $! \n $usage";
 
-my ($no_colors, $no_products, $no_orders);
+
 sub help {
 	print $usage;
 }
@@ -95,7 +95,7 @@ sub handler {
 
 sub interface{
 	my $action = shift;
-	
+	my ($no_colors, $no_products, $no_orders, $no_users);
 	if($action eq 'dbcreate'){
 		my $bool = $term->ask_yn(
 			prompt => "This option will delete all records and recreate your DB.\n Are you sure?",
@@ -104,6 +104,12 @@ sub interface{
 		if($bool){
 			$actions{$action}->();
 		};
+	}elsif($action eq 'users'){
+		$no_users = $term->get_reply(
+			prompt  => 'What is the number of users you want to generate?',
+			default => '5' );
+		print "Generating users.\n";
+		$actions{$action}->($no_users);
 	}elsif($action eq 'products'){
 		$no_products = $term->get_reply(
 			prompt  => 'What is the number of products you want to generate?',
