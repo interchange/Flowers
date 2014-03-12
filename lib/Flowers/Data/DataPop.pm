@@ -133,12 +133,16 @@ sub pop_orders{
 	my $no_orders = shift;
 	$shop_schema->resultset('Order')->delete_all;
 	my @users= $shop_schema->resultset('User')->search()->all;
+	my $nav_progress = Term::ProgressBar->new ({count => $#users+1, name => 'Orders', ETA   => 'linear'});
+	my $counter;
 	foreach(@users){
+		$counter++;
 		my $count = 0;
 		while($count < $no_orders){
 			$count++;
 			Flowers::Data::DataGen::orders($_->id);
 		}
+		$nav_progress->update ($counter);
 	}
 };
 1;
