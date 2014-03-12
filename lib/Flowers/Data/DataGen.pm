@@ -153,7 +153,6 @@ sub size{
 
 sub orders{
 	my $userid = shift;
-	my $rand_int = rand_int(3, 20);
 	my $shipping_address = shop_address->search({
 		'users_id' => $userid,
 		'type' => 'shipping',
@@ -167,6 +166,12 @@ sub orders{
 	unless( $shipping_address && $billing_address){
 		return 1;
 	}; 
+	my $count =  $shop_schema->resultset('Product')->search(
+	{
+		'canonical_sku' => undef,
+	})->count;
+
+	my $rand_int = rand_int(1, $count-1);
 	
 	my @product =  $shop_schema->resultset('Product')->search(
 	{

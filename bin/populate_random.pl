@@ -53,14 +53,14 @@ tie my %actions, "Tie::IxHash"
 
 #asking for argumentas
 my $usage = "Usage:
--g  : create complete database and generate data for all tabels,
+-g  : create complete database and generate data for all tables,
 -d  : remove existing database and creates new one,
--c  : generate data for country and state tabel,
--u  : generate data for user and roles tabel,
--a  : generate data for attribute tabel,
--p  : generate data for products tabel,
--n  : generate data for navigation tabel,
--o  : generate data for orders tabel.\n";
+-c  : generate data for country and state table,
+-u  : generate data for user and roles table,
+-a  : generate data for attribute table,
+-p  : generate data for products table,
+-n  : generate data for navigation table,
+-o  : generate data for orders table.\n";
 
 GetOptions (
 	'help'  => \&help,
