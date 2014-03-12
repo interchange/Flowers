@@ -114,7 +114,10 @@ sub pop_navigation{
 	},
 	)->all;
 	
-	my $products =  $shop_schema->resultset('Product')->search;
+	my $products =  $shop_schema->resultset('Product')->search(
+	{
+		'canonical_sku' => undef,
+	});
 	my $nav_progress = Term::ProgressBar->new ({count => $products ->count, name => 'Navigation', ETA   => 'linear'});
 	my $count;
 	$shop_schema->resultset('NavigationProduct')->delete;
