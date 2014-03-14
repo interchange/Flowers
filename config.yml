@@ -42,7 +42,7 @@ plugins:
     default:
       dsn: dbi:mysql:ic6
       user: flowerpower
-      pass: nevairbe
+      password: nevairbe
       schema_class: Interchange6::Schema
       options:
         RaiseError: 1
