@@ -8,6 +8,16 @@
 <param name="sku" class="product-link" target="href" op="append"/>
 <param name="sku" class="product-image" target="src" filter="image"/>
 </list>
+
+<paging name="products" list="products" class="paging">
+<element name="first" type="first" class="paging-first"/>
+<element name="previous" type="previous" class="previous"/>
+<element name="next" type="next" class="paging-next"/>
+<!-- <element name="last" type="last" class="paging-last"/> -->
+<element name="standard" type="standard" class="standard"/>
+<element name="active" type="active" class="selected"/>
+</paging>
+
 <!-- sort form -->
 <form name="sort" link="name">
 <field name="sort"/>

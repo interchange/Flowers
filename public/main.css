@@ -684,30 +684,30 @@ ul.subnav-l1 li ul.subnav-l2 li a:hover, ul.subnav-l1 li ul.subnav-l2 li.selecte
 
 
 
-.pagging {
+.paging {
 	padding: 3px 0;
 	overflow: hidden;
 	font-size: 11px;
 	}
 
-.pagging ul {
+.paging ul {
 	margin: 0; padding: 0; background: 0;
 	float: right;
 	}
 
-	.pagging li {
+	.paging li {
 		margin: 0; padding: 0; background: 0;
 		float: left;
 		margin: 0 1px;
 		}
 
-	.pagging li a {
+	.paging li a {
 		display: block;
 		float: left;
 		padding: 3px 6px;
 		}
 
-	.pagging li a.selected {
+	.paging li a.selected {
 		color: #ffffff;
 		background: #446506;
 		-webkit-border-radius: 3px;

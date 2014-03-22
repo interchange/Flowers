@@ -68,4 +68,6 @@ plugins:
   Interchange6::Routes:
     cart:
       template: checkout-giftinfo
+    navigation:
+      records: 20
 
