@@ -93,6 +93,8 @@ $shop_schema->resultset('User')->create({username => 'racke@linuxia.de',
                                          password => 'nevairbe',
                                         });
 
+$shop_schema->populate('Country', $pop_countries);
+$shop_schema->populate('State', $pop_states);
 
 # populate addresses
 my $shipping_address = shop_address->create({
@@ -170,9 +172,6 @@ scalar $shop_schema->populate('Product', \@products);
 
 $shop_schema->resultset('NavigationProduct')->create({sku => 'F0001',
                                                      navigation_id => $nid{Sympathy}});
-
-$shop_schema->populate('Country', $pop_countries);
-$shop_schema->populate('State', $pop_states);
 
 # create color attribute
 my $color_data = {name => 'color', title => 'Color', type => 'variant', priority => 2,
