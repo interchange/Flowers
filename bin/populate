@@ -130,43 +130,42 @@ $shop_schema->populate('Role', [
 
 
 my @navigation = (
-['roses', 'nav', 'menu-main', 'Ruža', '', '0', '0', undef, '0', '0', '0'],
-['birthday', 'nav', 'menu-main', 'Birthday', '', '0', '0', undef, '0', '0', '0'],
-['flowers', 'nav', 'menu-main', 'Flowers', '', '0', '0', undef, '0', '0', '0'],
-['plants', 'nav', 'menu-main', 'Plants', '', '0', '0', undef, '0', '0', '0'],
-['occasions', 'nav', 'menu-main', 'Occasions', '', '0', '0', undef, '0', '0', '0'],
-['sympathy', 'nav', 'menu-main', 'Sympathy', '', '0', '0', undef, '0', '0', '0'],
-['gift-baskets', 'nav', 'menu-main', 'Gift Baskets', '', '0', '0', undef, '0', '0', '0'],
-['specialty-gifts', 'nav', 'menu-main', 'Specialty Gifts', '', '0', '0', undef, '0', '0', '0'],
-['same-day', 'nav', 'menu-main', 'Same Day', '', '0', '0', undef, '0', '0', '0'],
-['sale', 'nav', 'menu-main', 'Sale', '', '0', '0', undef, '0', '0', '0'],
-['login', 'auth', 'top-login', 'Login', '', '0', '0', undef, '0', '0', '0'],
-['registration', 'nav', 'top-right', 'Sign Up', '', '0', '0', undef, '0', '0', '0'],
-['forum', 'nav', 'top-left', 'Forum', '', '0', '0', undef, '0', '0', '0'],
-['about-us', 'nav', 'top-left', 'About Us', '', '0', '0', undef, '0', '0', '0'],
-['orders', 'nav', 'top-left', 'Orders', '', '0', '0', undef, '0', '0', '0'],
-['customer-service', 'nav', 'top-left', 'Customer Service', '', 'customer-service', '0', undef, '0', '0', '0'],
-['logout', 'auth', 'top-logout', 'Logout', '', '', '0', undef, '0', '0', '0']
+['roses', 'nav', 'menu-main', 'Ruža', '', '0', undef, '0', '0', '0'],
+['birthday', 'nav', 'menu-main', 'Birthday', '', '0', undef, '0', '0', '0'],
+['flowers', 'nav', 'menu-main', 'Flowers', '', '0', undef, '0', '0', '0'],
+['plants', 'nav', 'menu-main', 'Plants', '', '0', undef, '0', '0', '0'],
+['occasions', 'nav', 'menu-main', 'Occasions', '', '0', undef, '0', '0', '0'],
+['sympathy', 'nav', 'menu-main', 'Sympathy', '', '0', undef, '0', '0', '0'],
+['gift-baskets', 'nav', 'menu-main', 'Gift Baskets', '', '0', undef, '0', '0', '0'],
+['specialty-gifts', 'nav', 'menu-main', 'Specialty Gifts', '', '0', undef, '0', '0', '0'],
+['same-day', 'nav', 'menu-main', 'Same Day', '', '0', undef, '0', '0', '0'],
+['sale', 'nav', 'menu-main', 'Sale', '', '0', undef, '0', '0', '0'],
+['login', 'auth', 'top-login', 'Login', '', '0', undef, '0', '0', '0'],
+['registration', 'nav', 'top-right', 'Sign Up', '', '0', undef, '0', '0', '0'],
+['forum', 'nav', 'top-left', 'Forum', '', '0', undef, '0', '0', '0'],
+['about-us', 'nav', 'top-left', 'About Us', '', '0', undef, '0', '0', '0'],
+['orders', 'nav', 'top-left', 'Orders', '', '0', undef, '0', '0', '0'],
+['customer-service', 'nav', 'top-left', 'Customer Service', '', '0', undef, '0', '0', '0'],
+['logout', 'auth', 'top-logout', 'Logout', '', '0', undef, '0', '0', '0']
 );
  
 # populate navigation table
 scalar $shop_schema->populate('Navigation', [
-[ 'uri', 'type', 'scope', 'name', 'description', 'template', 'alias', 'parent_id', 'priority', 'product_count', 'active'],
+[ 'uri', 'type', 'scope', 'name', 'description', 'alias', 'parent_id', 'priority', 'product_count', 'active'],
 @navigation,
 ]);
 
 # create navigation_id hash
 my %nid;
 
-my $nav = $shop_schema->resultset('Navigation')->search(
-    {
-        'scope' => 'menu-main',
-    },
-);
+my $nav = $shop_schema->resultset('Navigation')->search();
 
 while (my $record = $nav->next) {
     $nid{$record->name} = $record->navigation_id;
 };
+
+$shop_schema->resultset('Navigation')->find($nid{'Ruža'})->add_attribute('template', 'listing');
+$shop_schema->resultset('Navigation')->find($nid{'Customer Service'})->add_attribute('template', 'customer-service');
 
 scalar $shop_schema->populate('Product', \@products);
 

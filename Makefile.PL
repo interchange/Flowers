@@ -34,7 +34,7 @@ WriteMakefile(
 	'Moo' => 0.009013,
     'DBIx::Class' => 0,
     'Dancer::Plugin::DBIC' => 0,
-    'Interchange6::Schema' => 0.013,
+    'Interchange6::Schema' => 0.020,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Flowers-*' },
