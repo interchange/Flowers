@@ -5,6 +5,10 @@
 <value name="products.short_description" class="crumb" field="product.short_description"/>
 <value name="product-image" field="sku" filter="image" target="src"/>
 <value name="products.description" field="product.description" class="product-teaser"/>
+
+<!-- quantity dropdown -->
+<value name="quantity" iterator="quantity"/>
+
 <list name="options" class="product-options-item" iterator="options">
 <param name="price" class="product-options-price" filter="currency"/>
 <param name="sku" class="product-options-sku"/>

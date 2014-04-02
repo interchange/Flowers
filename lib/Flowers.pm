@@ -6,6 +6,9 @@ use Dancer::Plugin::Interchange6;
 use Dancer::Plugin::Interchange6::Routes;
 use Dancer::Plugin::Auth::Extensible;
 use Dancer::Plugin::DBIC;
+
+use Data::Transpose::Iterator::Scalar;
+
 use Flowers::Products qw/product product_list/;
 use Flowers::Routes::Account;
 use Flowers::Routes::Checkout;
@@ -72,7 +75,12 @@ hook 'before_product_display' => sub {
     my $tokens = shift;
     my $product = $tokens->{product};
 
-    debug "Attribute iterator for ", $product->sku, ": ", $product->attribute_iterator;
+    # quantity dropdown
+    my $qmin = 1;
+    my $qmax = 10;
+    my $qiter =  Data::Transpose::Iterator::Scalar->new([$qmin..$qmax]);
+
+    $tokens->{quantity} = $qiter;
 };
 
 hook 'before_cart_display' => sub {
