@@ -83,11 +83,7 @@ hook 'before_product_display' => sub {
     $tokens->{quantity} = $qiter;
 };
 
-hook 'before_cart_display' => sub {
-    my $tokens = shift;
 
-    debug "Cart items: ", $tokens->{cart};
-};
 
 get '/' => sub {
     my ($form, $sort, $products);
