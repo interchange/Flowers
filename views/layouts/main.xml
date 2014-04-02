@@ -37,6 +37,7 @@
 <param name="price" class="cart-item-price" filter="currency"/>
 <param name="uri" class="cart-item-uri" target="href"/> 
 <param name="sku" class="cart-item-image" target="src" filter="image"/>
+<param name="remove" class="btn-remove" field="sku" target="value"/>
 </list>
 <value name="cart-sum" field="total" filter="currency"/>
 <value name="usr"/>
