@@ -22,6 +22,7 @@ template: "template_flute"
 
 engines:
   template_flute:
+    check_dangling: 1
     filters:
       currency:
         options:
