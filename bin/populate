@@ -8,6 +8,7 @@ use warnings;
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
 use Interchange6::Schema::Populate::StateLocale;
+use Interchange6::Schema::Populate::Zone;
 
 use Dancer ':script';
 use Dancer::Plugin::Interchange6;
@@ -17,6 +18,7 @@ use utf8;
 # prepare records for populating the database
 my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
 my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
+my $pop_zones = Interchange6::Schema::Populate::Zone->new->records;
 
 my $shop_schema = shop_schema;
 
@@ -95,6 +97,7 @@ $shop_schema->resultset('User')->create({username => 'racke@linuxia.de',
 
 $shop_schema->populate('Country', $pop_countries);
 $shop_schema->populate('State', $pop_states);
+$shop_schema->populate('Zone', $pop_zones);
 
 # populate addresses
 my $shipping_address = shop_address->create({
@@ -317,6 +320,45 @@ while ($variant = $variant_rs->next) {
     # find attributes for this variant
     
 }
+
+# get zone for EU
+my $eu_zone = $shop_schema->resultset('Zone')->find({zone => 'EU VAT countries'});
+
+# shipment carriers and methods
+my %carriers;
+
+$carriers{Slovenske} = $shop_schema->resultset('ShipmentCarrier')->create(
+    {
+    name => 'Slovenske',
+    ShipmentMethod => [
+	{
+	    name => 'standard',
+	    title => 'Standard',
+            ShipmentRate => [
+		{
+		    price => 5,
+		    zones_id => $eu_zone->id,
+                },
+		],
+	},
+	{
+	    name => 'express',
+	    title => 'Express',
+	    max_weight => 100,
+	    ShipmentRate => [
+		{
+		    price => 15,
+		    zones_id => $eu_zone->id,
+                },
+		],
+           
+	},
+	],
+    }
+);
+
+# add rates
+
 
 # add test order
 my @orderlines;
