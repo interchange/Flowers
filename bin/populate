@@ -177,7 +177,7 @@ $shop_schema->resultset('NavigationProduct')->create({sku => 'F0001',
 
 # create color attribute
 my $color_data = {name => 'color', title => 'Color', type => 'variant', priority => 2,
-                  AttributeValue =>
+                  attribute_values =>
                   [{value => 'black', title => 'Black'},
                    {value => 'white', title => 'White'},
                    {value => 'green', title => 'Green'},
@@ -190,7 +190,7 @@ my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
 
 # create size attribute
 my $size_data = {name => 'size', title => 'Size', type => 'variant', priority => 1,
-                  AttributeValue =>
+                  attribute_values =>
                   [{value => 'small', title => 'Small', priority => 2},
                    {value => 'medium', title => 'Medium', priority => 1},
                    {value => 'large', title => 'Large', priority => 0},
@@ -200,7 +200,7 @@ my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
 
 # create height attribute
 my $height_data = {name => 'height', title => 'Height', type => 'variant', priority => 0,
-                   AttributeValue =>
+                   attribute_values =>
                        [{value => '10', title => '10cm'},
                         {value => '20', title => '20cm'},
                     ]};
@@ -256,7 +256,7 @@ $shop_schema->resultset('Product')->create($product_lily)->add_variants(
 $shop_schema->resultset('NavigationProduct')->create({sku => 'LILY',
                                                      navigation_id => $nid{Flowers}});
 # category "Flowers"
-$product_g->create_related('NavigationProduct', {navigation_id => $nid{Birthday}});
+$product_g->create_related('navigation_products', {navigation_id => $nid{Birthday}});
 
 # assign to product F001
 my $pa_data;
@@ -289,7 +289,7 @@ for my $height (@heights) {
 
 # pick three colors out of four
 for my $color (@colors) {
-    my $pav_list = $color_att->search_related('AttributeValue', {value => $color});
+    my $pav_list = $color_att->search_related('attribute_values', {value => $color});
     my $pav;
 
     if ($pav = $pav_list->next) {
@@ -304,14 +304,14 @@ for my $color (@colors) {
     }
 }
 
-my $pav_list = $height_att->search_related('AttributeValue', {value => 10});
+my $pav_list = $height_att->search_related('attribute_values', {value => 10});
 my $pav_data = {attribute_values_id => $pav_list->next->id,
                 product_attributes_id => $prod_height_att{10}->id,
             };
 
 $shop_schema->resultset('ProductAttributeValue')->create($pav_data);
 
-my $variant_rs = $shop_schema->resultset('Product')->find('F0001')->search_related('Variant');
+my $variant_rs = $shop_schema->resultset('Product')->find('F0001')->search_related('variants');
 my $variant;
 
 while ($variant = $variant_rs->next) {
@@ -330,11 +330,11 @@ my %carriers;
 $carriers{Slovenske} = $shop_schema->resultset('ShipmentCarrier')->create(
     {
     name => 'Slovenske',
-    ShipmentMethod => [
+    shipment_methods => [
 	{
 	    name => 'standard',
 	    title => 'Standard',
-            ShipmentRate => [
+            shipment_rates => [
 		{
 		    price => 5,
 		    zones_id => $eu_zone->id,
@@ -345,7 +345,7 @@ $carriers{Slovenske} = $shop_schema->resultset('ShipmentCarrier')->create(
 	    name => 'express',
 	    title => 'Express',
 	    max_weight => 100,
-	    ShipmentRate => [
+	    shipment_rates => [
 		{
 		    price => 15,
 		    zones_id => $eu_zone->id,
@@ -395,7 +395,7 @@ my %order_data = (order_number => 'RZ20140001',
                   users_id => $user1->id,
                   billing_addresses_id => $billing_address->id,
                   shipping_addresses_id => $shipping_address->id,
-                  Orderline => \@orderlines,
+                  orderlines => \@orderlines,
                   );
 
 shop_order->create(\%order_data);
