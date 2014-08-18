@@ -11,16 +11,17 @@ get '/search' => sub {
     $q = params->{q};
 
     unless (defined $q) {
-	$q = '';
+	    $q = '';
     }
 
     # sanity check on search term
     unless (length($q) >= 3) {
-	$message = 'Please enter at least 3 characters for the search.';
+        $message = 'Please enter at least 3 characters for the search.';
 
-	return template 'listing', {categories => $categories,
-				    message => $message,
-	}
+        return template 'listing', {
+            categories => $categories,
+            message => $message,
+        }
     }
 
     $criteria = {name => {'-like'  => "%$q%"},
@@ -29,20 +30,18 @@ get '/search' => sub {
     };
 
     # search products
-    $products = query->select(table => 'products',
-			      fields => [qw/sku name price description/],
-			      where => [-and => [-not_bool => 'inactive',
-						 [-or => $criteria
-					]]],
-			      order => 'name',
-			      limit => 200,
-	);
+    $products = shop_product->search({-and => [-bool => 'active',
+                                               canonical_sku => undef,
+                                               [-or => $criteria
+                                            ]]},
+                                     {order_by => {-asc => 'name',}},
+                                 );
 
     template 'listing', {categories => $categories,
 			 collections => $collections,
 			 collections_count => $collections_count,
 			 products => $products,
-			 products_count => $products_count,
+			 count => $products->count,
 			 message => $message,
     };
 };
