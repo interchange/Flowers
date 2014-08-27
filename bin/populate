@@ -7,6 +7,7 @@ use warnings;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
+use Interchange6::Schema::Populate::MessageType;
 use Interchange6::Schema::Populate::StateLocale;
 use Interchange6::Schema::Populate::Zone;
 
@@ -17,15 +18,13 @@ use utf8;
 
 # prepare records for populating the database
 my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
+my $pop_messagetype = Interchange6::Schema::Populate::MessageType->new->records;
 my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
 my $pop_zones = Interchange6::Schema::Populate::Zone->new->records;
 
 my $shop_schema = shop_schema;
 
 shop_schema->deploy({add_drop_table => 1,
-                     producer_args => {
-                         mysql_version => 5.000003,
-                     },
                  });
 
 my @attributes = ({name => 'color', title => 'Color'});
@@ -96,8 +95,9 @@ $shop_schema->resultset('User')->create({username => 'racke@linuxia.de',
                                         });
 
 $shop_schema->populate('Country', $pop_countries);
+$shop_schema->populate('MessageType', $pop_messagetype);
 $shop_schema->populate('State', $pop_states);
-$shop_schema->populate('Zone', $pop_zones);
+my $zonepop = $shop_schema->populate('Zone', $pop_zones);
 
 # populate addresses
 my $shipping_address = shop_address->create({
@@ -153,7 +153,7 @@ my @navigation = (
 );
  
 # populate navigation table
-scalar $shop_schema->populate('Navigation', [
+my $navpop = $shop_schema->populate('Navigation', [
 [ 'uri', 'type', 'scope', 'name', 'description', 'alias', 'parent_id', 'priority', 'product_count', 'active'],
 @navigation,
 ]);
