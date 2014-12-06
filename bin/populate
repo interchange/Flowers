@@ -5,20 +5,12 @@
 use strict;
 use warnings;
 
-use Interchange6::Schema;
-use Interchange6::Schema::Populate::CountryLocale;
-use Interchange6::Schema::Populate::StateLocale;
-use Interchange6::Schema::Populate::Zone;
+use Interchange6::Schema 0.060;
 
 use Dancer ':script';
 use Dancer::Plugin::Interchange6;
 
 use utf8;
-
-# prepare records for populating the database
-my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
-my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
-my $pop_zones = Interchange6::Schema::Populate::Zone->new->records;
 
 my $shop_schema = shop_schema;
 
@@ -83,10 +75,7 @@ my $user1 = shop_user->create({username => 'racke@nite.si',
 
 # populate default roles array
 my @roles = (
-['anonymous', 'Anonymous Users'],
-['authenticated', 'Authenticated Users'],
 ['user', 'User'],
-['admin', 'Admin'],
 ['editor', 'Editor']
 );
 
@@ -94,10 +83,6 @@ $shop_schema->resultset('User')->create({username => 'racke@linuxia.de',
                                          email => 'racke@linuxia.de',
                                          password => 'nevairbe',
                                         });
-
-$shop_schema->populate('Country', $pop_countries);
-$shop_schema->populate('State', $pop_states);
-$shop_schema->populate('Zone', $pop_zones);
 
 # populate addresses
 my $shipping_address = shop_address->create({
