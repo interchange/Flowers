@@ -75,7 +75,6 @@ my $user1 = shop_user->create({username => 'racke@nite.si',
 
 # populate default roles array
 my @roles = (
-['user', 'User'],
 ['editor', 'Editor']
 );
 
